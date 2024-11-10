@@ -1,0 +1,653 @@
+---
+title: "Inferring Causal Impact Using Bayesean Structural Time Series Models"
+
+format: html
+editor: visual 
+---
+
+```{r, message = F, echo = F}
+rm(list = ls())
+set.seed(1)
+library(CausalImpact)
+library(tidyverse)
+library(dplyr)
+library(gsignal)
+library(ggplot2)
+library(meantables)
+library(readxl)
+library(openxlsx)
+library(lubridate)
+library(ggthemes)
+library(tibbletime)
+```
+
+# Why Bother?
+
+Causal Inference is hard but clearly important. If we know when a shock occurred, can we use time series data to estimate the causal impact? Can we do it for different points in time?
+
+Brodersen et al. (2015) say yes!
+
+## Basic Intuition and introduction to the problem
+
+Take an example: marketing. Try to increase engagement by UK consumers with a product online
+
+-   We observe clicks on the product before the marketing campaign
+
+-   So, use this data to write a model that predicts UK clicks going forward
+
+-   So, we can 'forecast' what would have happened without the marketing campaign
+
+-   Then simply compare this to what actually happened
+
+-   The difference is the effect of the marketing
+
+![](images/Fig1.png)
+
+## Extension
+
+-   What if there are international shocks that affect clicks? e.g. Covid increases use of online shopping so, even without the marketing campaign, there would have been more interest in the product.
+
+-   The campaign only happens in Britain, so clicks in Germany and France are unaffected by any marketing
+
+-   So, we can use the data we observe in France and Germany as part of the 'forecast' and use this to control for international shocks
+
+## Usual synthetic control framework Abadie and Gardezabal
+
+-   Fancy extension of DiD analysis relaxing the assumption of parallel trends.
+-   Idea: Choose a convex combination of predictor time series s.t. a selected vector of pre treatment variables is most closely matched by said combination.
+-   Example: Abadie and Gardezabal matched the average values of economic variables over the years 1960 to 1969 in the Basque country. With the convex combination chosen such that the synthetic control matches Basque GDP as well as possible.
+-   Problem 1) Convex combination, is it realistic? Although it avoids extrapolation (e.g. no negative weights).
+-   Problem 2) Weights are somewhat arbitrary, e.g. synthetic control matches GDP well but might not match other variables well. Modeller's choice, often chosen for interpretability.
+
+![convex combination](Convex_projection.PNG){width="354"}.
+
+## Now for a Bayesian structural time series model
+
+$$
+\begin{align}
+y_{t} &= Z^{T}_{t}\alpha_{t}+\epsilon_{t}, \quad y_{t}, \eta_{t} \in \mathbb{R} Z^{t},\alpha_{t} \in \mathbb{R}^{d} \quad\text{ The observation equation}\\
+\alpha_{t+1} &= T_{t}\alpha_{t}+R_{t}\eta_{t}, \quad T_{t} \in \mathcal{M}(d,d), R_{t}\in\mathcal{M}(d,q), \eta_{t} \in \mathbb{R}^{q}\quad \text{ The state equation}
+\end{align}
+$$
+
+We will walk through the above two equations with the following components.
+
+1.  Regression component
+2.  Seasonal component
+3.  Local linear trend
+
+### An example
+
+Say for training, we have a year worth of daily data following the model:
+
+$$
+y_t = x^{1}_{t} + x^{2}_{t} + \mu_{t} + \alpha\textbf{1}_{t \in \text{Summer}} + \beta\textbf{1}_{t \in \text{Autumn}} + \gamma\textbf{1}_{t \in \text{Winter}} + \epsilon_{t} \text{, s.t. } \mu_{t+1} \sim\mathcal{N}(\mu_{t}, \sigma_{\mu})
+$$ Note: 1. Seasonal component separate from covariates. 2. Time varying average separate from covariates.
+
+Q: Why even have the $\mu_{t}$ term? A: Allows for more flexibility in modelling if we allow it to be locally linear, good for short term prediction since it reacts quickly.
+
+Clearly an annoyance under synthetic control and not even necessarily possible. What if we also have 200 different regressors to choose from?
+
+Below we set the covariates.
+
+```{r, echo = F}
+n <- floor(365*1.5)  # A year and a half of data
+x <- 1:n
+
+delta <- 2   # Coefficient for x1_t
+zeta <- 2.5  # Coefficient for x2_t
+x1_t <- delta*sin(12*pi*x/n)
+plot(x1_t, type = "o", col = "blue", main = "x1_t",
+     xlab = "Day", ylab = "Value")
+```
+
+```{r, echo = F}
+x2_t <- zeta*(x %% 50) / 50
+plot(x2_t, type = "o", col = "blue", main = "x2_t",
+     xlab = "Day", ylab = "Value")
+```
+
+```{r, echo = F}
+# Define parameters
+n <- floor(365*1.5)  # A year and a half of data
+alpha <- 5   # Coefficient for Summer
+beta <- -3   # Coefficient for Autumn
+gamma <- 4   # Coefficient for Winter
+
+delta <- 2   # Coefficient for x1_t
+zeta <- 2.5  # Coefficient for x2_t
+
+
+# Generate predictors x1_t and x2_t
+x <- 1:n
+x1_t <- delta*sin(12*pi*x/n)
+x2_t <- zeta*(x %% 50) / 50 # generate a sawtooth wave
+
+# Generate a bunch of nuissance regressors
+freqs <- c(1, 2, 5, 10)     # Different frequencies in Hz
+amps <- c(1, 0.5, 0.3, 0.1) # Amplitudes for each frequency
+phases <- runif(4, 0, 2*pi) # Random phases
+noise <- matrix(nrow = length(freqs), ncol = n)
+t_ <- seq(0, 10, length.out = n) 
+for (i in 1:length(freqs)) {
+  noise[i,] <- amps[i] * sin(2 * pi * freqs[i] * t_ + phases[i])
+}
+
+# Generate time-varying mean component mu_t that is a random walk with normally
+# distrbuted steps with mu_0 = 0
+steps <- rnorm(n, mean = 0, sd = 0.1) # 0 drift
+mu_t <- cumsum(steps)
+
+# Generate seasonal indicators
+seasons <- append(rep(c("Winter", "Spring", "Summer", "Autumn"),
+                      each = 365 / 4),
+                  "Autumn")# Get it to 365
+seasons <- append(seasons, seasons[0:(length(seasons)/2)]) # get it to 547 days
+
+is_summer <- ifelse(seasons == "Summer", 1, 0)
+is_autumn <- ifelse(seasons == "Autumn", 1, 0)
+is_winter <- ifelse(seasons == "Winter", 1, 0)
+# Generate error term
+epsilon_t <- rnorm(n, mean = 0, sd = 0.5)
+
+
+
+# Generate response variable y_t
+y_t <- x1_t + x2_t + mu_t + alpha * is_summer + beta * is_autumn + 
+       gamma * is_winter + epsilon_t
+# Add a 1.25 effect after the 380th day
+treatment_start <- 380
+y_t[treatment_start:length(y_t)] <- y_t[treatment_start:length(y_t)] + 3
+
+# Combine into a data frame
+data <- tibble(
+  day = 1:n,
+  y_t = y_t,
+  x1_t = x1_t,
+  x2_t = x2_t,
+
+
+  noise_1 = noise[1,],
+  noise_2 = noise[2,],
+  noise_3 = noise[3,],
+  noise_4 = noise[4,],
+
+mu_t = mu_t,
+  is_summer = is_summer,
+  is_winter = is_winter,
+  is_autumn = is_autumn,
+  epsilon_t = epsilon_t
+)
+
+# View the first few rows of the data
+data |> ggplot(aes(x = day, y = y_t)) +
+  geom_line() + labs(title = "Simulated seasonal process",
+                     x = "Day",  y = "Value") +
+  geom_vline(xintercept = treatment_start, linetype = "dashed", size = 1)
+
+# Note how we are not supplying dummies for the sesonal component
+
+
+t <- data |> select(y_t, x1_t, x2_t, noise_1, noise_2, noise_3, noise_4)
+
+pre.period <- c(1, treatment_start-1)
+post.period <- c(treatment_start, n)
+impact <- CausalImpact(t,
+                       pre.period,
+                       post.period,
+                       model.args = list(niter = 1000, nseasons = 4,
+                                         season.duration = floor(365/4)))
+plot(impact)
+
+```
+
+```{r, echo = F}
+summary(impact)
+```
+
+## How does it work: the state and transition equation
+
+-   State is there for time varying parameters.
+-   Observation equation translates how time varying parameters affect the outcome variable.
+-   Each component of state gets stacked into $\alpha_{t}$, while $T_{t}$ and $Q_{t}$ become block diagonal. There is an assumption that different components of state are independent.
+
+### The controls
+
+#### Static coefficients🙂
+
+$$
+\begin{align}
+y_{t} &= Z^{T}_{t}\alpha_{t}+\epsilon_{t}\\
+\alpha_{t+1} &= T_{t}\alpha_{t}+R_{t}\eta_{t}\\
+&\text{becomes}\\
+y_{t} &= \beta^{T}x_{t}+\epsilon_{t}\\
+\alpha_t &= 1
+\end{align}
+$$
+
+#### Dynamic coefficients 🤨
+
+E.g. What if we have structural breaks, worry about misspecification or time dependent relationships in the data.
+
+Say we have a regression component $\textbf{x}^{T}_{t}\beta_t = \sum_{j=1}^{J}x_{jt}\beta_{jt}$ where the $\beta_{t}$ evolve according to
+
+$$ \beta_{j,t+1} = \beta_{jt} + \eta_{\beta_{jt}} \quad \eta_{\beta_{jt}} \sim \mathcal{N}(0,\sigma_{\beta_{j}}^{2}) $$
+
+No problem.
+
+$$
+\begin{align}
+y_{t} &= Z^{T}_{t}\alpha_{t}+\epsilon_{t}\\
+\alpha_{t+1} &= T_{t}\alpha_{t}+R_{t}\eta_{t}\\
+&\text{becomes}\\
+Z_{t} &= x_{t}, \alpha_{t} = \beta_{t}, T_{t} = \mathbb{Id}_{J}\\
+y_{t} &= x_{t}^{T}\beta_{t} + \epsilon_{t}\\
+\beta_{t+1} &= \beta_{t} + \eta_{\beta_{t}}
+\end{align}
+$$
+
+### A local linear trend
+
+-   Consider a situation where we are looking at internet sales, due to trends and other unobservables or general market conditions we can expect the there to be a local trend but not a global trend. Think of fads for example.The assumption being that the mean and the slope of the model follow random walks.
+
+$$
+\begin{align}
+\mu_{t+1} &= \mu_{t} + \delta_{t}+ \eta_{\mu,t}\\
+\delta_{t+1} &= \delta_{t} + \eta_{\delta, t}
+\end{align}
+$$
+
+```{r, echo = F}
+plot(mu_t, type = "o", col = "blue", main = "mu_t",
+     xlab = "Day", ylab = "Value")
+```
+
+$$
+\begin{align}
+y_{t} &= Z^{T}_{t}\alpha_{t}+\epsilon_{t}\\
+\alpha_{t+1} &= T_{t}\alpha_{t}+R_{t}\eta_{t}\\
+&\text{becomes}\\
+\alpha_{t} &= (\mu_{t}, \delta_{t})^{T}, Z_{t} = (1, 0)^{T}, T_{t} = \begin{pmatrix}1&1\\ 0 &1 \end{pmatrix}\\
+y_{t} &= \begin{pmatrix}1&0\end{pmatrix}\begin{pmatrix}\mu_{t} \\\delta_{t}\end{pmatrix} + \epsilon_{t}\\
+\alpha_{t+1} &= \begin{pmatrix}1&1\\ 0 &1 \end{pmatrix}\alpha_{t} + \eta_{t}
+\end{align}
+$$
+
+### Seasonality
+
+Just like the locally linear trend, what if we have that there is known seasonality in our data that is not necessarily present in the covariants? E.g. sales numbers going up at Christmas or hangover cure being searched much more often around new years (note that it also has a weekend component)![Source: Google trends](Hangover_cure.PNG)
+
+-   Given that we have S seasons and the average seasonal effect is zero (w.l.o.g.)
+
+$$
+\gamma_{t+1} = -\sum_{s=0}^{S-2}\gamma_{t-s} + \eta_{\gamma,t}
+$$
+
+-   Assume that we have four seasons \$\$ \begin{align}
+    \alpha_{t+1} &= T_{t}\alpha_{t}+R_{t}\eta_{t}\\
+    &\text{becomes}\\
+
+    T_{t} &= \begin{pmatrix}-1&-1&-1\\1&0&0\\0&1&0\end{pmatrix}\\
+    \alpha_{0} &= (\gamma_{1}, \gamma_{2},\gamma_{3})^{T}\\
+    \alpha_{1} &= (-\gamma_{1}-\gamma_{2}-\gamma_{3}, \gamma_{1},\gamma_{2})^{T}\\
+    ...
+    \end{align} \$\$
+
+Note that we only need to set $T_{t}$ to this when the seasons change. Multiple different seasonal effects can also be easily handled by expanding $T_{t}$ when the different seasons change.
+
+# How does it work: the priors
+
+Now that we have our model assembled, how do we choose among a potentially large set of controls?
+
+### Frequentist approach
+
+The usual frequentist way of F-test, tests the null hypothesis that some variables are zero and produces a p-value. I.e.
+
+$$
+P(data | H_{0}) 
+$$ 🤮
+
+Further more in constructing the synthetic control we must make "arbitrary" assumptions about what values we care about. E.g. do we want to match only GDP or do we want to match a combination of GDP and employment rate.
+
+### Bayesian approach: the spike and slab prior😎
+
+-   We only want to retain a subset of possible regressors, so we believe that given a lot of regressors, most of them should be 0. This gives the spike. The non-zero regressors we have little information on so we set a diffuse distribution, in the paper a normal, on them.
+
+Given that we have $J$ regressors, let $\rho = (\rho_1, \rho_2, ... \rho_{J})$, where $\rho_{i} = 1$ if $\beta_{i} \neq 0$ and $\rho_{i} = 0$ otherwise. We can denote $\beta_{\rho}$ the nonzero elements of the vector $\beta$. The spike and slab prior is and can be factorised as
+
+$$
+p\left(\rho, \beta, \frac{1}{\sigma_{\epsilon}}\right) = p(\rho)\hspace{0.3em} p(\sigma^{2}_{\epsilon} | \rho)\hspace{0.3em} p(\beta_{\rho} | \sigma_{\epsilon}^2,\rho)
+$$
+
+We also have the following hyperparameters $\sigma_{\epsilon}, \Sigma, s_{\epsilon}, \nu_{\epsilon}$.
+
+#### Spike
+
+The prior probability that a particular coefficient will be 0.
+
+$$
+ p(\rho)
+$$
+
+```{r, echo = F}
+
+# Create linearly spaced points from -4 to 4 
+x <- seq(-4, 4, length.out = 1000)
+
+spike_height <- 5  # Arbitrary large value to represent the point mass
+df_spike <- data.frame(x = 0, density = spike_height)
+ggplot() +
+  geom_segment(data = df_spike, aes(x = x, xend = x, y = 0, yend = density), color = "red", size = 1.5) +
+  labs(title = "Spike part of Spike-and-Slab Prior with Point Mass at Zero",
+       y = "Density",
+       x = "Coefficient Value")
+
+```
+
+The spike can be any distribution over $\{0,1\}^{J}$, in practice the most common choice is
+
+$$ 
+p(\rho) = \Pi^{J}_{j=1} \pi_{j}^{\rho_{j}}(1-\pi{j})^{1-\rho_{j}}
+$$
+
+Where $\pi_{j}$ is the prior probability of regressor $j$ being included in the model.
+
+##### Complication
+
+selection of $\pi_{j}$ The approach Broderson et al. take is to set $\pi_{j} = \frac{M}{J}$, where $M$ is the expected model size.
+
+#### Slab
+
+Prior distribution of coefficient values.
+
+$$
+p(\sigma^{2}_{\epsilon} | \rho)\hspace{0.3em} p(\beta_{\rho} | \sigma_{\epsilon}^2,\rho)
+$$
+
+The conjugate normal-inverse Gamma distribution
+
+$$
+\beta_{\rho} | \sigma_{\epsilon}^{2} \sim \mathcal{N}(\textbf{b}_\rho, \sigma_{\epsilon}^{2} (\Sigma_{\rho}^{-1})^{-1}), \textbf{b}_\rho = 0 \\
+\frac{1}{\sigma^{2}_{\epsilon}} \sim \mathcal{G}(\frac{\nu_{\epsilon}}{2},\frac{s_{\epsilon}}{2})
+$$
+
+We can interpret $s_{\epsilon}$ as a prior sum of squares, so that $\frac s\nu_{\epsilon}$ is the prior $\sigma^{2}$ and $\nu_{\epsilon}$ is the weight assigned to the prior estimate. Finally $\Sigma_{\rho}$ is the prior precision over $\beta$. In the paper they use a Zellner g-prior.
+
+```{r, echo = F}
+
+# Create the slab component
+slab_mean <- 0
+slab_sd <- 1.0
+slab <- dnorm(x, mean = slab_mean, sd = slab_sd)
+
+# Create a data frame for plotting the slab
+df_slab <- data.frame(x = x, density = slab)
+
+ggplot() +
+
+  geom_line(data = df_slab, aes(x = x, y = density), color = "blue", size = 1.2)+
+  labs(title = "Slab part of Spike-and-Slab Prior",
+       y = "Density",
+       x = "Coefficient Value")
+```
+
+```{r, echo = F}
+
+ggplot() +
+  geom_line(data = df_slab, aes(x = x, y = density), color = "blue", size = 1.2) +
+  geom_segment(data = df_spike, aes(x = x, xend = x, y = 0, yend = density), color = "red", size = 1.5) +
+  labs(title = "Spike-and-Slab Prior",
+       y = "Density",
+       x = "Coefficient Value")
+```
+
+## How does it work, Posterior sampling
+
+In normal DiD/synthetic control we don't have any confidence intervals, we take the observed value minus the predicted value and that's it, you can get confidence intervals as Abadie and Gardezabal do by fitting an AR(DL) model with the gap as dependant and terrorism as independent. Where they proceeded to manually remove insignificant variables.
+
+-   Gibbs sampler to simulate parameters and sequence of state space variables from $p(\theta, \alpha|y_{1:n})$, where $\theta$ is a vector of model parameters and $\alpha$ is the sequence of state vectors $\alpha_{1}, \alpha_{2},...$
+
+-   Step one simulate $p(\alpha |y_{1:n},\theta)$
+
+-   Step two simulate $p(\theta |y_{1:n},\alpha)$
+
+-   Some more details but not really important.
+
+```{r, echo = F}
+# Load required libraries
+library(ggplot2)
+library(emdbook) # For mvrnorm
+library(reshape2)
+
+# Step 1: Create a grid for the 2D normal distribution
+# Define mean and covariance matrix for the 2D normal distribution
+mean <- c(0, 0)
+cov_matrix <- matrix(c(1, 0.8, 0.8, 1), nrow = 2)
+
+# Create a grid of values
+x <- seq(-3, 3, length=100)
+y <- seq(-3, 3, length=100)
+grid <- expand.grid(X = x, Y = y)
+# Compute the density at each grid point
+densities <- apply(grid, 1, function(point) {
+  dmvnorm(point, mu = mean, Sigma = cov_matrix)
+})
+grid$Density <- densities
+
+# Step 2: Perform Gibbs sampling
+# Initialize Gibbs sampling
+set.seed(123)
+n_samples <- 4
+samples <- matrix(NA, ncol=2, nrow=n_samples)
+samples[1, ] <- c(0, 0) # Initial point
+
+# Gibbs sampling function
+gibbs_sample <- function(prev_sample, mean, cov_matrix) {
+  x1 <- prev_sample[1]
+  x2 <- prev_sample[2]
+  
+  # Sample X1 given X2
+  mu_x1_given_x2 <- mean[1] + cov_matrix[1, 2] / cov_matrix[2, 2] * (x2 - mean[2])
+  sigma_x1_given_x2 <- sqrt(cov_matrix[1, 1] - cov_matrix[1, 2]^2 / cov_matrix[2, 2])
+  x1_new <- rnorm(1, mean = mu_x1_given_x2, sd = sigma_x1_given_x2)
+  
+  # Sample X2 given X1
+  mu_x2_given_x1 <- mean[2] + cov_matrix[2, 1] / cov_matrix[1, 1] * (x1_new - mean[1])
+  sigma_x2_given_x1 <- sqrt(cov_matrix[2, 2] - cov_matrix[2, 1]^2 / cov_matrix[1, 1])
+  x2_new <- rnorm(1, mean = mu_x2_given_x1, sd = sigma_x2_given_x1)
+  
+  return(c(x1_new, x2_new))
+}
+
+
+# Perform Gibbs sampling iterations
+for (i in 2:n_samples) {
+  samples[i, ] <- gibbs_sample(samples[i-1, ], mean, cov_matrix)
+}
+
+# Step 3: Plot the results
+# Convert the samples into a data frame
+samples_df <- data.frame(X = samples[, 1], Y = samples[, 2], Iteration = 1:n_samples)
+samples_df
+
+# Create the base contour plot of the 2D normal distribution
+
+
+ggplot(grid, aes(x = X, y = Y)) +
+  geom_contour(aes(z = Density, color = after_stat(level)), bins = 10) + # Contour lines for the 2D normal distribution
+    geom_point(data = samples_df, aes(x = X, y = Y, color = Iteration), size = 2)+ # Plot Gibbs samples
+  scale_color_viridis_c() + # Color scheme for iterations
+  labs(title = "2D Normal Distribution with Gibbs Sampling",
+       x = "X", y = "Y") +
+  theme(legend.position = "none")
+
+```
+
+I'd end with a Bayesian inference joke but the first three people I told it to didn't laugh and now I'm not so sure it's funny.
+
+# A Real Life Example: Brexit
+
+-   So, can we apply this to the real world?
+
+-   We study the impact of Brexit on UK GDP
+
+-   As other variables, we use GDP, the US exchange rate, private consumption, government consumption, gross capital formation, imports and net exports
+
+-   We have these from 5 countries: Australia, Austria, Finland, Sweeden and Switzerland
+
+-   We make the assumption that Brexit didn't affect the macroeconomy in these countries.
+
+-   Probably wrong but maybe not fatal- trade with these countries is relatively small compared to the size of the economy overall
+
+```{r, echo = F}
+impact_data <- read.xlsx("./CleanData.xlsx")
+impact_data$quarter <- as.Date(impact_data$quarter, origin = "1899-12-30")
+impact_data <- zoo(impact_data[,-1], order.by = impact_data$quarter)
+
+pre_period <- as.Date(c("1970-01-01", "2016-04-01"))
+post_period <- as.Date(c("2016-07-01", "2024-04-01"))
+
+impact <- CausalImpact(impact_data, pre_period, post_period, model.args = list(nseasons = 4, niter = 1000))
+summary(impact)
+```
+
+```{r, echo = F}
+plot(impact) #Picture of Johnson
+```
+
+-   At first, Brexit had a negative impact but then the effect turns positive
+
+-   A positive impact of Brexit is not consistent with our prior...
+
+-   The sign changes fairly dramatically after 2019 - also strange. Covid?
+
+-   More specifically, because we has an unusual Covid compared to others?
+
+-   Plot GDP across countries to check
+
+```{r, echo = F}
+lags <- read.xlsx("./lags.xlsx")
+
+lags$quarter <- as.Date(lags$quarter, origin = "1899-12-30")
+
+lags <- lags |> 
+  group_by(country) |> 
+  as_tbl_time(index = quarter) |> 
+  filter_time('2010-07-01' ~ 'end') |> 
+  mutate(index = 100*(value/first(value)))
+
+lags <- lags |> 
+  group_by(country) |> 
+  as_tbl_time(index = quarter) |> 
+  filter_time('2019-07-01' ~ 'end') |> 
+  mutate(index = 100*(value/first(value)))
+
+lags |> 
+  ggplot(aes(x = quarter, y = index, color = country, group = country))+
+  geom_line()+
+  theme_classic()
+```
+
+-   Our Covid was much worse compared to the other countries, at least initially
+
+-   Perhaps the model thinks that when others are doing relatively well, we should be doing relatively poorly (the correlation between others' GDP and our GDP is negative)?
+
+-   Another interpretation might be that there is some interaction effect between Brexit and Covid that boosted UK GDP
+
+# Are We Convinced?
+
+-   Forecasting is hard, time-series can be imprecise
+
+-   Can't predict shocks - Did Covid break the Brexit model?
+
+-   But what if we were studying an unfamiliar environment and didn't know about shocks like Brexit?
+
+-   But, methods like this have been used in the econ literature (Born et al., 2019; Mirenda et al., 2022 use Abadie and Gardezabal's approach)
+
+-   Seems safer over short time horizons and in familiar settings (e.g. recent macroeconomy)
+
+-   Another problem: spillovers. Brexit probably affected Australian economy, including through a trade deal... (["UK's first post-Brexit trade deals go live"](https://www.gov.uk/government/news/uks-first-post-brexit-trade-deals-to-go-live-at-midnight-on-wednesday#:~:text=Under%20the%20deals'%20beneficial%20terms,UK%20is%20expected%20to%20benefit.), UK Govt. press release, 21st May 2023)
+
+-   Even if not fatal for the sign and rough size, spillovers will bias the estimates
+
+-   There could be settings where this is not (as much of) a problem
+
+-   Statistical solutions: check for level shifts/stationarity in the control series?
+
+## Does the Size of the Shock Matter?
+
+Perhaps not?
+
+We simulated models like those above. Varied the size of the shock and tried to recover it
+
+```{r, echo = F}
+all_sims <- read_csv("./all_shocks.csv", show_col_types = FALSE)
+
+summ_results <- all_sims |> 
+  group_by(sim_shocks) |> 
+  mean_table(results) |> 
+  mutate(diff = mean - group_cat)
+
+summ_results |> 
+  ggplot(aes(x = group_cat, y = mean))+
+  geom_point()+
+  geom_errorbar(aes(ymin = min, ymax = max))+
+  coord_cartesian(xlim = c(-1, 12), ylim = c(-1,12))+
+  geom_abline(color = "red")+
+  ggtitle(label = "Simulated vs Estimated Shock Sizes", subtitle = "Min/Max")+
+  xlab("Simulated Shock")+
+  ylab("Estimated Shock")+
+  theme_classic()
+```
+
+But what is the distribution like within the min/max bounds?
+
+```{r, echo = F}
+
+summ_results |> 
+  ggplot(aes(x = group_cat, y = mean))+
+  geom_point()+
+  geom_errorbar(aes(ymin = lcl, ymax = ucl))+
+  coord_cartesian(xlim = c(-1, 12), ylim = c(-1,12))+
+  geom_abline(color = "red")+
+  ggtitle(label = "Simulated vs Estimated Shock Sizes", subtitle = "95% Confidence Intervals")+
+  xlab("Simulated Shock")+
+  ylab("Estimated Shock")+
+  theme_classic()
+
+```
+
+-   A foray into frequentism
+
+-   But the model seems to do quite well
+
+### Does the Fit Improve as the Shock Gets Larger?
+
+Perhaps it might because a bigger shock is easier to detect?
+
+```{r, echo = F}
+all_sims <- all_sims |> 
+  mutate(diff = results - sim_shocks)
+
+diff_reg <- lm(diff ~ sim_shocks, all_sims)
+summary(diff_reg)
+
+```
+
+-   Another foray into frequentism
+
+-   Not a lot of evidence that it does
+
+-   This might be encouraging as we want the model to be able to detect when there is no causal impact
+
+-   The size of the shock might not matter because we are not simply trying to detect a shock but rather to quantify it
+
+-   This seems a step beyond a lot of research in (applied micro-)economics where an effect size is found but is not the focus
+
+-   If we are focusing on effect sizes, is this method more useful when we think the external validity of our research is high? What is the use of pinning down the effect size (beyond small or large) if we are studying very particular circumstances?
+
+# Thanks for listening!
+
+![It's not Camelot, It's only a model](Camelot_only_a_model.png)
+
+Any questions/comments?
