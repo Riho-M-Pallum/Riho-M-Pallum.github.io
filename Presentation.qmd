@@ -6,7 +6,7 @@ format:
     show-slide-number: print
     incremental: true
     toc: true
-    toc-depth: 2
+    toc-depth: 1
     
 editor: visual
 ---
@@ -22,22 +22,28 @@ library(ggplot2)
 
 ## Bayes rule
 
-$$ P(\text{Hypothesis} | \text{Data}) =\frac{P(\text{Data} | \text{Hypothesis}) P(\text{Hypothesis})}{P(\text{data})} $$
+$$
+P(\text{Hypothesis} | \text{Data}) =\frac{P(\text{Data} | \text{Hypothesis}) P(\text{Hypothesis})}{P(\text{data})}
+$$
 - Prior: Our Hyptothesis (= parameters) before seeing the data, set by the researcher
 
--   Likelihood: The probability of observing the data given the Hypothesis, our "model"
+- Likelihood: The probability of observing the data given the Hypothesis, our "model"
 
--   Posterior: Belief about the Hypothesis (= parameters) given the data, the point of Bayesian statistics
+- Posterior: Belief about the Hypothesis (= parameters) given the data, the point of Bayesian statistics
 
--   Evidence: (Usually unobserved) normalising constant
+  - Evidence: (Usually unobserved) normalising constant
+
+---
 
 ### Example model, Bayesian linear regression {.smaller}
 
 Given we chose the model $$ y = \theta_{0} + \theta_{1}x + \epsilon\quad y,x,\theta_{0},\theta_{1} \in \mathbb{R}\\ \epsilon \sim \mathcal{N}(0,\sigma^{2}) $$ We set relatively uninformative priors $$ \theta = \begin{pmatrix}\theta_{0}\\ \theta_{1}\end{pmatrix} \sim \mathcal{N}\left(\begin{pmatrix}0\\0\end{pmatrix},\begin{pmatrix}\sigma_{0}^{2} & 0\\ 0 & \sigma_{1}^{2}\end{pmatrix}\right) = \mathcal{N}(\mu_{prior}, \Sigma_{prior}),\quad \sigma^{2}\sim \text{Inv-Gamma}(\alpha, \beta)$$ The likelihood defined by the model given that we have $k$ samples follows the distribution $$ y|\beta_{0},\beta_{1} \sim \mathcal{N}_{k}(X\beta, diag(\sigma^{2})), \quad X = \begin{pmatrix}1 & x_{1}\\ ... &...\\ 1 & x_{k}\end{pmatrix}$$ Therefore the posterior is $$ P((\theta_{0}, \theta_{1})^{T} | y) \propto \mathcal{N}\left(\Sigma_{posterior}\frac{1}{\sigma^{2}}X^{T}y, (\Sigma_{prior}^{-1} + \frac{1}{\sigma^{2}}X^{T}X)^{-1} \right)$$ !!!! Note the above is false, do not bother with the full distribution
 
+---
+
 ## Inference: credible intervals {.smaller}
 
--   Say, given \textcolor{red}{any sample} $Y = (y_{1},...,y_{n})$ the posterior \$ P(\theta \| y) \$ looks approximately like
+-   Say, given \textcolor{red}{any sample} $Y^{n} = (y_{1},...,y_{n})$ the posterior $ P(\theta | Y^{n}) $ looks approximately like
 
 -   
     ```{r, echo = F}
@@ -81,22 +87,26 @@ Given we chose the model $$ y = \theta_{0} + \theta_{1}x + \epsilon\quad y,x,\th
 
 -   Usual workaround of minimising width of interval
 
-## Set identification {.smaller}
+---
+
+## Set identification 
 
 -   A parameter set $\Theta$ is said to be (point) identified if $\Theta = \{\theta\}$
 
--   A parameter set $\Theta$ is said to be set identified if $\exists \theta_{0}, \theta_{1} \in \Theta s.t. \theta_{0} \neq \theta_{1}$
-
 -   In a Bayesian setting parameters are set identified if $\exists \theta_{0}, \theta_{1} \in \Theta ~ s.t. \theta_{0} \neq \theta_{1},\quad p(y | \theta_{0}) = p(y | \theta_{1}) ~ \forall y \in Y$
 
--   Note this is for any draw of the data and the priors must be equal. Not necessarily the posteriors
+-  I.e. for any draw of the data the priors must be equal, but not necessarily the posteriors.
 
-::: notes
-Q: but can we not just get rid of the flat region since we choose the prior? A: Yes and we will discuss that in the next slide
+- Indeed the problem is that the posteriors can be different depending on the draw, even though the priors are the same
+
+::: {.notes}
+  Q: but can we not just get rid of the flat region since we choose the prior? A: Yes and we will discuss that in    the next slide
 :::
 
 
-# The paper
+# The main problem and solution in the paper
+
+---
 
 ## The problem with set identified models {.smaller}
 - Let $\mathbf{Y} \subseteq\mathbb{R}^{d}$ be the set of samples $Y$ and $\Theta\subseteq\mathbb{R}^{d}$ be the set of possible parameter values $\theta$.
@@ -113,8 +123,13 @@ Q: but can we not just get rid of the flat region since we choose the prior? A: 
 
 -   Any valid conditional prior must satisfy $\pi_{\theta |\phi}(IS_{\theta}(\phi)) = 1, \pi_{\phi}\text{-a.s.}$
 
-### Example plot
-For example
+::: {.notes}
+$\Phi$ is just the set of reduced form parameters. Note that g partitons $\Theta$ into equivalence classes and the set of identified sets is the partition induced by $g$. The decomposition of the prior into reduced form and structural given reduced form priors is what creates the flat region. Technically the above image is not correct as we can put any kind of prior on the flat region.
+:::
+
+---
+
+### Set identified example
 ```{r}
 # Load ggplot2 library
 library(ggplot2)
@@ -182,9 +197,9 @@ ggplot() +
   theme_void()  # Remove background, grid, and axes for a clean look
 ```
 
+---
 
-### Examples of the problem {.smaller}
-Or
+### Possible unrevisable priors on the identified sets
 ```{r, echo = F}
 # Simulate some data with an interval
 set.seed(123)
@@ -239,23 +254,33 @@ print(plot + geom_line(aes(x = x_values, y = truncated_normal)))
 :::
 :::
 
-::: notes
-$\Phi$ is just the set of reduced form parameters. Note that g partitons $\Theta$ into equivalence classes and the set of identified sets is the partition induced by $g$. The decomposition of the prior into reduced form and structural given reduced form priors is what creates the flat region. Technically the above image is not correct as we can put any kind of prior on the flat region.
-:::
 
-## The solution: Posterior upper and lower probabilities (Theorem 1)
+
+---
+
+## The solution: Posterior upper and lower probabilities (Theorem 1) {.smaller}
 
 -   We can define $\Pi_{\theta | Y} = \{\pi_{\theta|Y} = \int_{\Phi}\pi_{\theta|\phi}d\pi_{\phi |Y}\}$
--   For any set $\Delta$ we can define the posterior lower probability as $$
+-   For any set $D$ we can define the posterior lower probability as $$
     \underline{\pi}_{\theta|Y}(D) = \inf_{\pi_{\theta |Y} \in \Pi_{\theta|Y}} \pi_{\theta|Y}(D) = \pi_{\phi|Y}(\{\phi | IS_{\theta}(\phi) \subset D\})
     $$
 -   and the posterior upper probability as $$
     \overline{\pi}_{\theta|Y}(D) = \sup_{\pi_{\theta |Y} \in \Pi_{\theta|Y}} \pi_{\theta|Y}(D) = \pi_{\phi|Y}(\{\phi | IS_{\theta}(\phi) \cap D \neq \emptyset\})
     $$
 -   Note these hold for any $D$. In general the worst and best case scenario depend on the set $D$
--   $\underline{\pi}_{\theta|Y}$ is the lowest possible posterior probability assigned the event $\{\theta \in D\}$ no matter which prior is chosen by the researcher ::: notes The assumptions that go into this theorem are basically that the probability distributions are well defined and that the maps are lower semi-continuous :::
+-   $\underline{\pi}_{\theta|Y}$ is the lowest possible posterior probability assigned the event $\{\theta \in D\}$ no matter which prior is chosen by the researcher 
 
-### Intuition for the interpretation
+::: {.notes}
+The assumptions that go into this theorem are basically that the probability distributions are well defined and that the maps are lower semi-continuous.
+
+Also it's important to mention that here we are entering the world of set valued random variables. The identified set is seen as a random realisation of the data generating process.
+
+Futhermore the second equalities are important as we can observe the reduced form parameter and therefore approximate these probabilities by calculation.
+:::
+
+---
+
+### Some intuition for the lower probabilities
 
 ```{r, echo = F}
 flat_prior <- rep(1, 100)/(9-4)
@@ -266,14 +291,15 @@ plot + # Vertical line for x (point on axis)
   geom_segment(aes(x = 2, xend = 2, y = -2, yend = 2), color = "red", size = 1) +
   # Vertical line for x + a (point on axis)
   geom_segment(aes(x = 3, xend = 3, y = -2, yend = 2), color = "red", size = 1) +
-  
-  geom_line(aes(x = x_values,
-                y = flat_prior,
-                color = "Uniform distribution"
-                ),size = 1)
+  annotate("text", x = 2.5, y = 2.5, label = "Hypothesis D [2,3]", size = 4, color = "red")+
+  geom_rect(aes(xmin = 4, xmax = 9, ymin = 0, ymax = 2), fill = "lightblue", alpha = 0.5, title = "Uniform") +
+  annotate("text", x = 8, y = 3, label = "Uniform distribution on the Identified set [4,9]", size = 5, color = "black")
+
 
 #print(plot + geom_line(aes(x = x_values, y = crazy_values)))
 ```
+
+---
 
 ```{r, echo = F}
 flat_prior <- rep(1, 100)/(9-4)
@@ -284,12 +310,15 @@ plot + # Vertical line for x (point on axis)
   geom_segment(aes(x = 2, xend = 2, y = -2, yend = 2), color = "red", size = 1) +
   # Vertical line for x + a (point on axis)
   geom_segment(aes(x = 5, xend = 5, y = -2, yend = 2), color = "red", size = 1) +
+  annotate("text", x = 3, y = 2.5, label = "Hypothesis D [2,5]", size = 4, color = "red")+
   
   geom_rect(aes(xmin = 5, xmax = 9, ymin = 0, ymax = 2), fill = "lightblue", alpha = 0.5, title = "Uniform") +
-  annotate("text", x = 8, y = 3, label = "Uniform distribution from 5 to 9", size = 5, color = "black")
+  annotate("text", x = 8, y = 3, label = "Uniform distribution on a subset of the IS [5,9]", size = 5, color = "black")
 
 #print(plot + geom_line(aes(x = x_values, y = crazy_values)))
 ```
+
+---
 
 ```{r, echo = F}
 flat_prior <- rep(1, 100)/(9-4)
@@ -300,47 +329,63 @@ plot + # Vertical line for x (point on axis)
   geom_segment(aes(x = 3.5, xend = 3.5, y = -2, yend = 2), color = "red", size = 1) +
   # Vertical line for x + a (point on axis)
   geom_segment(aes(x = 10, xend = 10, y = -2, yend = 2), color = "red", size = 1) +
+  annotate("text", x = 3, y = 2.5, label = "Hypothesis D [3.5,10]", size = 4, color = "red")+
   
   geom_rect(aes(xmin = 4, xmax = 9, ymin = 0, ymax = 2), fill = "lightblue", alpha = 0.5, title = "Uniform") +
-  annotate("text", x = 8, y = 3, label = "Uniform distribution from 5 to 9", size = 5, color = "black")
+  annotate("text", x = 8, y = 3, label = "Uniform distribution on [5,9]", size = 5, color = "black")
 
 #print(plot + geom_line(aes(x = x_values, y = crazy_values)))
 ```
 
-## Set of posterior means
+---
 
--   Theorem 1 gives us lower and upper probabilities for an arbitrary event $D$, next step is to summarise the information without specifying $D$.
--   The paper proposes the set of posterior means $\{E_{\theta | Y} | \pi_{\theta | Y} \in \Pi_{\theta | Y}\}$.
--   Theorem 2: Under measurability conditions and $E_{\phi | Y}[\sup_{\theta \in IS_{\theta}(\phi)}||\theta||] < \infty$, given that $co(IS_{\theta}(\phi))$ is the convex hull of $IS_{\theta}(\phi)$ and $E^{A}_{\phi|Y}$ is the aumann expectation with probability measure $\phi_{\phi |Y}$ we have $$
-    \{E_{\theta | Y} | \pi_{\theta | Y} \in \Pi_{\theta | Y}\} = E^{A}_{\phi|Y}[co(IS_{\theta}(\phi))]
-    $$
+## Summarising information: The set of posterior means {.smaller}
 
-### What is the Aumann expectation and what is the expectation of a random set?
+-   Theorem 1 gives us lower and upper probabilities for an arbitrary event $D$, next step is to summarise the information in the class of posteriors without specifying $D$.
+-   The paper proposes the set of posterior means $\{E_{\theta | Y}(\theta) | \pi_{\theta | Y} \in \Pi_{\theta | Y}\}$.
+-   Theorem 2: Under measurability conditions and $E_{\phi | Y}[\sup_{\theta \in IS_{\theta}(\phi)}||\theta||] < \infty$, given that $co(IS_{\theta}(\phi))$ is the convex hull of $IS_{\theta}(\phi)$ and $E^{A}_{\phi|Y}$ is the aumann expectation with probability measure $\phi_{\phi |Y}$ we have
+$$
+    \{E_{\theta | Y}(\theta) | \pi_{\theta | Y} \in \Pi_{\theta | Y}\} = E^{A}_{\phi|Y}[co(IS_{\theta}(\phi))]
+$$
+
+---
+
+## What is the Aumann expectation and what is the expectation of a random set? {.smaller}
 
 -   To prove all the results in the paper they use random set theory, where instead of having a single outcome, you have a set of outcomes of your random variable.
 
 -   Definition: For a random correspondence $\mathcal{X}$, $E^{A}[\mathcal{X}] = \{E(f) | f \text{ is a measurable selection of }F\}$
 
--   Consider $\mathcal{X} | \{1,2\} \to \mathcal{P}(\{1,2,3\}), 1 \mapsto \{1,2\}, 2 \mapsto \{2,3\}$
-
-    $$
-    \begin{cases}
-    f_{1}(1) = 1, f_{1}(2) = 2\\
-    f_{2}(1) = 1, f_{2}(2) = 3\\
-    f_{3}(1) = 2, f_{3}(2) = 2\\
-    f_{4}(1) = 2, f_{4}(2) = 3
-    \end{cases} \Rightarrow E[\mathcal{X}] = \{E(f_{1}), E(f_{2}), E(f_{3}), E(f_{4})\} \stackrel{\mathbb{P} = U\{1,2\}}{=} \{1.5, 2, 2.5\}
-    $$
+-   Consider $\mathcal{X} : \{1,2\} \to \mathcal{P}(\{1,2,3\}), 1 \mapsto \{1,2\}, 2 \mapsto \{2,3\}$
+$$
+\begin{cases}
+  f_{1}(1) = 1, f_{1}(2) = 2\\
+  f_{2}(1) = 1, f_{2}(2) = 3\\
+  f_{3}(1) = 2, f_{3}(2) = 2\\
+  f_{4}(1) = 2, f_{4}(2) = 3
+\end{cases} \Rightarrow E[\mathcal{X}] = \{E(f_{1}), E(f_{2}), E(f_{3}), E(f_{4})\} \stackrel{\mathbb{P} = U\{1,2\}}{=} \{1.5, 2, 2.5\}
+$$
     
-### A little note on support functions
+---
+
+## A little note on support functions {.smaller}
 - Definition: Let $A \subseteq \mathbb{R}^{n}$, then the support function of $A$ is $\sigma_{A} : \mathbb{R}^{n} \to \mathbb{R} \cup \{+\infty\}$ defined by
 $$
   \sigma_A(v) = \sup_{x \in A}\langle q,x \rangle
 $$
-![Left: \sigma_{A}(p) = ||p|| h, Right: \sigma_{A}(p) = -||p|| h](Support_function.PNG)
 - Why? Support functions provide a characterisation of closed convex sets = convex hulls. So instead of working over the space of all possible sets, we can work over the function space $\{f | f:\mathbb{R}^{n} \to \mathbb{R} \cup \{+\infty\}\}$, where there is a lot more theory (see linear forms).
-- In the context of this paper, they will come up a lot.
-### Why the Aumann expectation and why the set of posterior means?
+- In the context of this paper, they come up a lot.
+
+
+---
+
+## Picture of support functions
+
+![Left: $\sigma_{A}(p) = ||p|| h$, Right: $\sigma_{A}(p) = -||p|| h$](Support_function.PNG)
+
+---
+
+## Why the Aumann expectation and why the set of posterior means? {.smaller}
 - Consider 1D case $\Theta \subseteq \mathbb{R}$ then 
 $$
 \begin{align*}
@@ -348,12 +393,17 @@ $$
 &l(\phi) = \inf\{\theta | \theta \in IS_{\theta}(\phi)\}, \quad u(\phi) = \sup\{\theta | \theta \in IS_{\theta}(\phi)\}
 \end{align*}
 $$
-- Note: They claim that this can be calculated by Monte Carlo, how easy that would be I do not know.
-- In a more general setting for for $A  := IS_{\theta}(\phi)$ given $\sigma_{A}(q) : \mathcal{P}(\Theta) \times \mathbb{R}^{n} \to \mathbb{R} \cup \{+\infty\}$, we have $\sigma_{E^{A}_{\phi|Y}[co(IS_{\theta}(\phi))]} = E_{\phi |Y}[\sigma_{IS_{\theta}(\phi)}]$
+- In a more general setting for for $A  := IS_{\theta}(\phi)$ given $\sigma_{A}(q) :\mathbb{R}^{n} \to \mathbb{R} \cup \{+\infty\}$, we have $\sigma_{E^{A}_{\phi|Y}[co(IS_{\theta}(\phi))]} = E_{\phi |Y}[\sigma_{IS_{\theta}(\phi)}]$
 - Note $\sigma_{[a,b]}(v) = \begin{cases} bv \text{ if } v >0\\ av \text{ if } v<0 \\ 0 \text{ if } v = 0\end{cases}$
 - Q: Is the true parameter always going to be in this set?
  
-## Robust credible regions
+::: {.notes}
+Note: They claim that the expectation of the support function can be calculated by monte carlo, how easy that would be I do not know
+:::
+
+---
+
+## Robust credible regions {.smaller}
 - The motivation for this paper was that Frequentists and Bayesians used to disagree on inference in set identified models
 - From a frequentist perspective the Bayesian 95% credible region coincides with the Frequentist 95% confidence interval. I.e. they contain the true parameter 95% of the time.
 - In set identification, the Bayesian credible region concentrates *strictly within* the identified set (see Moon and Schorfheide 2012) and thus contains the true parameter all of the time for some parameters or never for other parameter values in for example the sign identified case. 
@@ -362,29 +412,45 @@ $$
 \underline{\pi}_{\theta | Y}(C_{\alpha}) = \pi_{\phi|Y}(\{\phi | IS_{\theta}(\phi) \subset D\}) \geq \alpha
 $$
 
-##Asymptotic properties
-### : Consistency
+---
+
+# Asymptotic properties
+
+---
+
+## Consistency {.smaller}
 - Given true parameter value $\phi_{0}$
 - Assumption 2:
--- i) $IS_{\theta}(\phi_{0})$ is bounded and $IS_{\theta}(\cdot)$ is continuous at $\theta = \theta_{0}$ (note set continuity)
--- i) Posterior of $\phi$ is consistent for $\phi_{0}$, $P_{Y^{\infty}|\theta_{0}}$-a.s.
--- iii) $\exists \delta > 0$ s.t. $IS_{\theta}(\phi) \in L_{1+\delta}(\pi_{\phi|Y})$
+  - i) $IS_{\theta}(\phi_{0})$ is bounded and $IS_{\theta}(\cdot)$ is continuous at $\theta = \theta_{0}$ (note set continuity)
+  - ii) Posterior of $\phi$ is consistent for $\phi_{0}$, $P_{Y^{\infty}|\theta_{0}}$-a.s.
+  - iii) $\exists \delta > 0$ s.t. $IS_{\theta}(\phi) \in L_{1+\delta}(\pi_{\phi|Y})$
 - Theorem 3: a) Under i) and ii) $\lim_{T \to \infty } \pi_{\theta| Y^{T}}(\{\phi | d_{H}(IS_{\theta}(\phi), IS_{\theta}(\phi_{0})) > \epsilon\}) = 0$
 - Theorem 3: b) Suppose $\pi_{\phi}$ is non atomic then $\lim_{T \to \infty } d_{H}(E^{A}_{\phi |Y}[co(IS_{\theta}(\phi))], co(IS_{\theta}(\phi_{0}))) = 0$, $P_{Y^{\infty}|\phi_{0}}$-a.s.
 
 
-::: notes
+::: {.notes}
 A) The identified set $IS_{\theta}(\phi)$ converges to $IS_{\theta}(\phi_{0})$ under the Hausdorff Metric
 B) We can use the posterior means as an approximation of the true identified set.
 :::
 
-### Coverage of robust credible region
-- Asumption 3:
--- i) $IS_{\theta}(\phi)$ is $\pi_{\theta}$-a.s. closed and bounded and $IS_{\theta}(\phi_{0})$ is closed and bounded
--- ii) $C_{\alpha}$ is in the class of closed and convex sets of $\mathbb{R}^{k}$
-- Assumption 4: To do with the convergence of the support function of the convex hull of the identified set to the true convex hull of the identified set.
--- The assumptions characterise the geometry of the identified set and if the support function is not differentiable at some point then the assumptions can be violated
+---
 
+## Coverage of robust credible region {.smallers}
+- Asumption 3:
+  - i) $IS_{\theta}(\phi)$ is $\pi_{\theta}$-a.s. closed and bounded and $IS_{\theta}(\phi_{0})$ is closed and bounded
+  - ii) $C_{\alpha}$ is in the class of closed and convex sets of $\mathbb{R}^{k}$
+- Assumption 4: To do with the convergence of the support function of the convex hull of the identified set to the true convex hull of the identified set.
+  - The assumptions characterise the geometry of the identified set and if the support function is not differentiable at some point then the assumptions can be violated
+  
+  
+::: {.notes}
+Assumption 3 is fairly technical and not very important in practice according to the authors
+Assumption 4 can be simplified in the case of a scalar value, it's basically to do with whether the estimator satisfies the Bernstein-von-Mises property. While the second bit of the assumption simplifies to whether the lower and upper probability bounds are differentiable in an open interval around the true value with non zero derivative at the true value
+:::
+
+---
+
+## An example of a possible violation
 ```{r, echo = F}
 
 square_data <- data.frame(
@@ -409,10 +475,7 @@ ggplot() +
 
 ```
 
-::: notes
-Assumption 3 is fairly technical and not very important in practice according to the authors
-Assumption 4 can be simplified in the case of a scalar value, it's basically to do with whether the estimator satisfies the Bernstein-von-Mises property. While the second bit of the assumption simplifies to whether the lower and upper probability bounds are differentiable in an open interval around the true value with non zero derivative at the true value
-:::
+---
 
 ### Coverage of robust credible region 2
 - Given the assumptions above hold then, $C_{\alpha}$ is an asymptotically valid confidence interval as
@@ -423,14 +486,23 @@ $$
 $$
 \lim_{T \to \infty} P_{Y^{T}|\phi_{0}}(IS_{\theta}(\phi) \subset C_{\alpha}) = \alpha
 $$
-::: notes
+::: {.notes}
 The second bit shows that if you construct the credible interval to satisfy the bound with equality then asymptotically the bound will also be satisfied with equality.
 :::
 
+---
+
 ## Diagnostic tools
 
+---
+
+## An AR(0) example, if we have time 
+
+---
 
 ### Thank you
+
+---
 
 ### Sources
 
@@ -447,7 +519,7 @@ Moon, Hyungsik Roger, and Frank Schorfheide. "Bayesian and frequentist inference
 -   The reduced form VAR(0) is $y_{t} = A^{-1}\epsilon_{t} = \eta_{t}$ with $E[\eta_{t}\eta_{t}^{T}]= \Sigma =  A^{-1}(A^{-1})^{T} = (A^{T}A)^{-1}$
 -   Note that $\forall Q \in \mathcal{O}(2)$, we have that $\Sigma = (A^{T}QQ^{T}A)^{-1}$, the model is set identified
 
-```{{r, echo = F}}
+```{r, echo = F}
 # Now for a flat model
 n <- 10000  # Number of samples
 mean_flat <- 0  # Mean of the flat region
