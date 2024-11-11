@@ -1,4 +1,7 @@
 ---
+project:
+  type: website
+  output-dir: docs
 title: "Robust Bayesian Inference for Set-Identified Models"
 format: 
   revealjs:
@@ -7,6 +10,9 @@ format:
     incremental: true
     toc: true
     toc-depth: 1
+output:
+  revealjs:
+    self-contained: false
     
 editor: visual
 ---
