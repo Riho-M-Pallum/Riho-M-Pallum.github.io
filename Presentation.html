@@ -337,7 +337,6 @@
 <li class="fragment"><a href="#/quick-overview-of-bayesian-statistics" id="/toc-quick-overview-of-bayesian-statistics">Quick overview of Bayesian statistics</a></li>
 <li class="fragment"><a href="#/the-main-problem-and-solution-in-the-paper" id="/toc-the-main-problem-and-solution-in-the-paper">The main problem and solution in the paper</a></li>
 <li class="fragment"><a href="#/asymptotic-properties" id="/toc-asymptotic-properties">Asymptotic properties</a></li>
-<li class="fragment"><a href="#/an-ar0-example-if-we-have-time" id="/toc-an-ar0-example-if-we-have-time">An AR(0) example, if we have time</a></li>
 </ul>
 </nav>
 </section>
@@ -358,6 +357,11 @@ P(\text{Hypothesis} | \text{Data}) =\frac{P(\text{Data} | \text{Hypothesis}) P(\
 <li class="fragment">Evidence: (Usually unobserved) normalising constant</li>
 </ul></li>
 </ul>
+</section>
+<section class="slide level2">
+
+<h3 class="smaller" id="example-model-bayesian-linear-regression">Example model, Bayesian linear regression</h3>
+<p>Given we chose the model <span class="math display">\[ y = \theta_{0} + \theta_{1}x + \epsilon\quad y,x,\theta_{0},\theta_{1} \in \mathbb{R}\\ \epsilon \sim \mathcal{N}(0,\sigma^{2}) \]</span> We set relatively uninformative priors <span class="math display">\[ \theta = \begin{pmatrix}\theta_{0}\\ \theta_{1}\end{pmatrix} \sim \mathcal{N}\left(\begin{pmatrix}0\\0\end{pmatrix},\begin{pmatrix}\sigma_{0}^{2} &amp; 0\\ 0 &amp; \sigma_{1}^{2}\end{pmatrix}\right) = \mathcal{N}(\mu_{prior}, \Sigma_{prior}),\quad \sigma^{2}\sim \text{Inv-Gamma}(\alpha, \beta)\]</span> The likelihood defined by the model given that we have <span class="math inline">\(k\)</span> samples follows the distribution <span class="math display">\[ y|\beta_{0},\beta_{1} \sim \mathcal{N}_{k}(X\beta, diag(\sigma^{2})), \quad X = \begin{pmatrix}1 &amp; x_{1}\\ ... &amp;...\\ 1 &amp; x_{k}\end{pmatrix}\]</span> Therefore the posterior is <span class="math display">\[ P((\theta_{0}, \theta_{1})^{T} | y) \propto \mathcal{N}\left(\Sigma_{posterior}\frac{1}{\sigma^{2}}X^{T}y, (\Sigma_{prior}^{-1} + \frac{1}{\sigma^{2}}X^{T}X)^{-1} \right)\]</span> !!!! Note the above is false, do not bother with the full distribution</p>
 </section>
 <section id="inference-credible-intervals" class="slide level2 smaller">
 <h2>Inference: credible intervals</h2>
@@ -673,13 +677,8 @@ P(\text{Hypothesis} | \text{Data}) =\frac{P(\text{Data} | \text{Hypothesis}) P(\
 <section id="diagnostic-tools" class="slide level2">
 <h2>Diagnostic tools</h2>
 </section>
-<section class="slide level2">
-
-</section></section>
-<section>
-<section id="an-ar0-example-if-we-have-time" class="title-slide slide level1 center">
-<h1>An AR(0) example, if we have time</h1>
-
+<section id="an-ar0-example-if-we-have-time" class="slide level2">
+<h2>An AR(0) example, if we have time</h2>
 </section>
 <section class="slide level2">
 
@@ -691,13 +690,6 @@ P(\text{Hypothesis} | \text{Data}) =\frac{P(\text{Data} | \text{Hypothesis}) P(\
 <p>Li, S., Ogura, Y., Kreinovich, V. (2002). The Aumann Integral and the Conditional Expectation of a Set-Valued Random Variable. In: Limit Theorems and Applications of Set-Valued and Fuzzy Set-Valued Random Variables. Theory and Decision Library, vol 43. Springer, Dordrecht. https://doi.org/10.1007/978-94-015-9932-0_2 # Graveyard</p>
 <p>MAA 307: Convex optimization and optimal control. Samuel Amstutz. CMAP and Department of Applied Mathematics. Ecole polytechnique</p>
 <p>Moon, Hyungsik Roger, and Frank Schorfheide. “Bayesian and frequentist inference in partially identified models.” Econometrica 80.2 (2012): 755-782.</p>
-</section>
-<section id="graveyard" class="slide level2">
-<h2>Graveyard</h2>
-</section>
-<section id="example-model-bayesian-linear-regression" class="slide level2 smaller">
-<h2>Example model, Bayesian linear regression</h2>
-<p>Given we chose the model <span class="math display">\[ y = \theta_{0} + \theta_{1}x + \epsilon\quad y,x,\theta_{0},\theta_{1} \in \mathbb{R}\\ \epsilon \sim \mathcal{N}(0,\sigma^{2}) \]</span> We set relatively uninformative priors <span class="math display">\[ \theta = \begin{pmatrix}\theta_{0}\\ \theta_{1}\end{pmatrix} \sim \mathcal{N}\left(\begin{pmatrix}0\\0\end{pmatrix},\begin{pmatrix}\sigma_{0}^{2} &amp; 0\\ 0 &amp; \sigma_{1}^{2}\end{pmatrix}\right) = \mathcal{N}(\mu_{prior}, \Sigma_{prior}),\quad \sigma^{2}\sim \text{Inv-Gamma}(\alpha, \beta)\]</span> The likelihood defined by the model given that we have <span class="math inline">\(k\)</span> samples follows the distribution <span class="math display">\[ y|\beta_{0},\beta_{1} \sim \mathcal{N}_{k}(X\beta, diag(\sigma^{2})), \quad X = \begin{pmatrix}1 &amp; x_{1}\\ ... &amp;...\\ 1 &amp; x_{k}\end{pmatrix}\]</span> Therefore the posterior is <span class="math display">\[ P((\theta_{0}, \theta_{1})^{T} | y) \propto \mathcal{N}\left(\Sigma_{posterior}\frac{1}{\sigma^{2}}X^{T}y, (\Sigma_{prior}^{-1} + \frac{1}{\sigma^{2}}X^{T}X)^{-1} \right)\]</span> !!!! Note the above is false, do not bother with the full distribution</p>
 </section>
 <section id="a-running-example" class="slide level2">
 <h2>A running example</h2>

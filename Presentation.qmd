@@ -31,10 +31,15 @@ $$
 
 - Posterior: Belief about the Hypothesis (= parameters) given the data, the point of Bayesian statistics
 
-- Evidence: (Usually unobserved) normalising constant
+  - Evidence: (Usually unobserved) normalising constant
 
 ---
 
+### Example model, Bayesian linear regression {.smaller}
+
+Given we chose the model $$ y = \theta_{0} + \theta_{1}x + \epsilon\quad y,x,\theta_{0},\theta_{1} \in \mathbb{R}\\ \epsilon \sim \mathcal{N}(0,\sigma^{2}) $$ We set relatively uninformative priors $$ \theta = \begin{pmatrix}\theta_{0}\\ \theta_{1}\end{pmatrix} \sim \mathcal{N}\left(\begin{pmatrix}0\\0\end{pmatrix},\begin{pmatrix}\sigma_{0}^{2} & 0\\ 0 & \sigma_{1}^{2}\end{pmatrix}\right) = \mathcal{N}(\mu_{prior}, \Sigma_{prior}),\quad \sigma^{2}\sim \text{Inv-Gamma}(\alpha, \beta)$$ The likelihood defined by the model given that we have $k$ samples follows the distribution $$ y|\beta_{0},\beta_{1} \sim \mathcal{N}_{k}(X\beta, diag(\sigma^{2})), \quad X = \begin{pmatrix}1 & x_{1}\\ ... &...\\ 1 & x_{k}\end{pmatrix}$$ Therefore the posterior is $$ P((\theta_{0}, \theta_{1})^{T} | y) \propto \mathcal{N}\left(\Sigma_{posterior}\frac{1}{\sigma^{2}}X^{T}y, (\Sigma_{prior}^{-1} + \frac{1}{\sigma^{2}}X^{T}X)^{-1} \right)$$ !!!! Note the above is false, do not bother with the full distribution
+
+---
 
 ## Inference: credible intervals {.smaller}
 
@@ -491,7 +496,7 @@ The second bit shows that if you construct the credible interval to satisfy the 
 
 ---
 
-# An AR(0) example, if we have time 
+## An AR(0) example, if we have time 
 
 ---
 
@@ -506,14 +511,6 @@ Li, S., Ogura, Y., Kreinovich, V. (2002). The Aumann Integral and the Conditiona
 MAA 307: Convex optimization and optimal control. Samuel Amstutz. CMAP and Department of Applied Mathematics. Ecole polytechnique
 
 Moon, Hyungsik Roger, and Frank Schorfheide. "Bayesian and frequentist inference in partially identified models." Econometrica 80.2 (2012): 755-782.
-
-
-## Graveyard
-
-## Example model, Bayesian linear regression {.smaller}
-
-Given we chose the model $$ y = \theta_{0} + \theta_{1}x + \epsilon\quad y,x,\theta_{0},\theta_{1} \in \mathbb{R}\\ \epsilon \sim \mathcal{N}(0,\sigma^{2}) $$ We set relatively uninformative priors $$ \theta = \begin{pmatrix}\theta_{0}\\ \theta_{1}\end{pmatrix} \sim \mathcal{N}\left(\begin{pmatrix}0\\0\end{pmatrix},\begin{pmatrix}\sigma_{0}^{2} & 0\\ 0 & \sigma_{1}^{2}\end{pmatrix}\right) = \mathcal{N}(\mu_{prior}, \Sigma_{prior}),\quad \sigma^{2}\sim \text{Inv-Gamma}(\alpha, \beta)$$ The likelihood defined by the model given that we have $k$ samples follows the distribution $$ y|\beta_{0},\beta_{1} \sim \mathcal{N}_{k}(X\beta, diag(\sigma^{2})), \quad X = \begin{pmatrix}1 & x_{1}\\ ... &...\\ 1 & x_{k}\end{pmatrix}$$ Therefore the posterior is $$ P((\theta_{0}, \theta_{1})^{T} | y) \propto \mathcal{N}\left(\Sigma_{posterior}\frac{1}{\sigma^{2}}X^{T}y, (\Sigma_{prior}^{-1} + \frac{1}{\sigma^{2}}X^{T}X)^{-1} \right)$$ !!!! Note the above is false, do not bother with the full distribution
-
 
 
 ## A running example
