@@ -1,0 +1,121 @@
+[
+  {
+    "objectID": "about.html#bayes-rule",
+    "href": "about.html#bayes-rule",
+    "title": "Robust Bayesian Inference for Set-Identified Models",
+    "section": "Bayes rule",
+    "text": "Bayes rule\n\\[\nP(\\text{Hypothesis} | \\text{Data}) =\\frac{P(\\text{Data} | \\text{Hypothesis}) P(\\text{Hypothesis})}{P(\\text{data})}\n\\] - Prior: Our Hyptothesis (= parameters) before seeing the data, set by the researcher\n\nLikelihood: The probability of observing the data given the Hypothesis, our “model”\nPosterior: Belief about the Hypothesis (= parameters) given the data, the point of Bayesian statistics\n\nEvidence: (Usually unobserved) normalising constant"
+  },
+  {
+    "objectID": "about.html#inference-credible-intervals",
+    "href": "about.html#inference-credible-intervals",
+    "title": "Robust Bayesian Inference for Set-Identified Models",
+    "section": "Inference: credible intervals",
+    "text": "Inference: credible intervals\n\nSay, given \\(Y^{n} = (y_{1},...,y_{n})\\) the posterior $ P(| Y^{n}) $ looks approximately like\n\n\n\n\n\n\n\n\n\nNon unique 95% credible interval\nUsual workaround of minimising width of interval"
+  },
+  {
+    "objectID": "about.html#set-identification",
+    "href": "about.html#set-identification",
+    "title": "Robust Bayesian Inference for Set-Identified Models",
+    "section": "Set identification",
+    "text": "Set identification\n\nA parameter set \\(\\Theta\\) is said to be (point) identified if \\(\\Theta = \\{\\theta\\}\\)\nIn a Bayesian setting parameters are set identified if \\(\\exists \\theta_{0}, \\theta_{1} \\in \\Theta ~ s.t. \\theta_{0} \\neq \\theta_{1},\\quad p(y | \\theta_{0}) = p(y | \\theta_{1}) ~ \\forall y \\in Y\\)\nI.e. for any draw of the data the priors must be equal, but not necessarily the posteriors.\nIndeed the problem is that the posteriors can be different depending on the draw, even though the priors are the same\n\n\nQ: but can we not just get rid of the flat region since we choose the prior? A: Yes and we will discuss that in the next slide"
+  },
+  {
+    "objectID": "about.html#the-problem-with-set-identified-models",
+    "href": "about.html#the-problem-with-set-identified-models",
+    "title": "Robust Bayesian Inference for Set-Identified Models",
+    "section": "The problem with set identified models",
+    "text": "The problem with set identified models\n\nLet \\(\\mathbf{Y} \\subseteq\\mathbb{R}^{d}\\) be the set of samples \\(Y\\) and \\(\\Theta\\subseteq\\mathbb{R}^{d}\\) be the set of possible parameter values \\(\\theta\\).\nSuppose we only observe a reduced form parameter \\(\\phi = g(\\theta)\\), where \\(g: \\Theta \\to \\Phi,\\quad g(\\theta) = g(\\theta^{'}) \\text{ iff }p(Y|\\theta) = p(Y|\\theta^{'}) \\forall Y\\in \\mathbf{Y}\\). Note in set identification \\(g\\) is not injective.\nDefine the identified set \\(IS_{\\theta}(\\phi) = \\{\\theta \\in \\Theta | g(\\theta) = \\phi\\}\\)\nIn set identified structural models the prior \\(\\pi_{\\theta|Y}\\) can be decomposed as \\(\\pi_{\\theta|Y}(\\cdot) = \\int_{\\Phi}\\pi_{\\theta |\\phi}(\\cdot)d\\pi_{\\phi|Y}\\).\n\\(\\pi_{\\phi |Y}\\) is updated as data comes in, \\(\\pi_{\\theta | \\phi}\\) is not.\nWe could also choose a \\(\\pi_{\\theta |\\phi}\\), but a good one is often not available. Bypassing this problem is the main contribution of this paper\nAny valid conditional prior must satisfy \\(\\pi_{\\theta |\\phi}(IS_{\\theta}(\\phi)) = 1, \\pi_{\\phi}\\text{-a.s.}\\)\n\n\n\\(\\Phi\\) is just the set of reduced form parameters. Note that g partitons \\(\\Theta\\) into equivalence classes and the set of identified sets is the partition induced by \\(g\\). The decomposition of the prior into reduced form and structural given reduced form priors is what creates the flat region. Technically the above image is not correct as we can put any kind of prior on the flat region."
+  },
+  {
+    "objectID": "about.html#the-solution-posterior-upper-and-lower-probabilities-theorem-1",
+    "href": "about.html#the-solution-posterior-upper-and-lower-probabilities-theorem-1",
+    "title": "Robust Bayesian Inference for Set-Identified Models",
+    "section": "The solution: Posterior upper and lower probabilities (Theorem 1)",
+    "text": "The solution: Posterior upper and lower probabilities (Theorem 1)\n\nWe can define \\(\\Pi_{\\theta | Y} = \\{\\pi_{\\theta|Y} = \\int_{\\Phi}\\pi_{\\theta|\\phi}d\\pi_{\\phi |Y}\\}\\)\nFor any set \\(D\\) we can define the posterior lower probability as \\[\n\\underline{\\pi}_{\\theta|Y}(D) = \\inf_{\\pi_{\\theta |Y} \\in \\Pi_{\\theta|Y}} \\pi_{\\theta|Y}(D) = \\pi_{\\phi|Y}(\\{\\phi | IS_{\\theta}(\\phi) \\subset D\\})\n\\]\nand the posterior upper probability as \\[\n\\overline{\\pi}_{\\theta|Y}(D) = \\sup_{\\pi_{\\theta |Y} \\in \\Pi_{\\theta|Y}} \\pi_{\\theta|Y}(D) = \\pi_{\\phi|Y}(\\{\\phi | IS_{\\theta}(\\phi) \\cap D \\neq \\emptyset\\})\n\\]\nNote these hold for any \\(D\\). In general the worst and best case scenario depend on the set \\(D\\)\n\\(\\underline{\\pi}_{\\theta|Y}\\) is the lowest possible posterior probability assigned the event \\(\\{\\theta \\in D\\}\\) no matter which prior is chosen by the researcher\n\n\nThe assumptions that go into this theorem are basically that the probability distributions are well defined and that the maps are lower semi-continuous.\nAlso it’s important to mention that here we are entering the world of set valued random variables. The identified set is seen as a random realisation of the data generating process.\nFuthermore the second equalities are important as we can observe the reduced form parameter and therefore approximate these probabilities by calculation."
+  },
+  {
+    "objectID": "about.html#summarising-information-the-set-of-posterior-means",
+    "href": "about.html#summarising-information-the-set-of-posterior-means",
+    "title": "Robust Bayesian Inference for Set-Identified Models",
+    "section": "Summarising information: The set of posterior means",
+    "text": "Summarising information: The set of posterior means\n\nTheorem 1 gives us lower and upper probabilities for an arbitrary event \\(D\\), next step is to summarise the information in the class of posteriors without specifying \\(D\\).\nThe paper proposes the set of posterior means \\(\\{E_{\\theta | Y}(\\theta) | \\pi_{\\theta | Y} \\in \\Pi_{\\theta | Y}\\}\\).\nTheorem 2: Under measurability conditions and \\(E_{\\phi | Y}[\\sup_{\\theta \\in IS_{\\theta}(\\phi)}||\\theta||] &lt; \\infty\\), given that \\(co(IS_{\\theta}(\\phi))\\) is the convex hull of \\(IS_{\\theta}(\\phi)\\) and \\(E^{A}_{\\phi|Y}\\) is the aumann expectation with probability measure \\(\\phi_{\\phi |Y}\\) we have \\[\n\\{E_{\\theta | Y}(\\theta) | \\pi_{\\theta | Y} \\in \\Pi_{\\theta | Y}\\} = E^{A}_{\\phi|Y}[co(IS_{\\theta}(\\phi))]\n\\]"
+  },
+  {
+    "objectID": "about.html#what-is-the-aumann-expectation-and-what-is-the-expectation-of-a-random-set",
+    "href": "about.html#what-is-the-aumann-expectation-and-what-is-the-expectation-of-a-random-set",
+    "title": "Robust Bayesian Inference for Set-Identified Models",
+    "section": "What is the Aumann expectation and what is the expectation of a random set?",
+    "text": "What is the Aumann expectation and what is the expectation of a random set?\n\nTo prove all the results in the paper they use random set theory, where instead of having a single outcome, you have a set of outcomes of your random variable.\nDefinition: For a random correspondence \\(\\mathcal{X}\\), \\(E^{A}[\\mathcal{X}] = \\{E(f) | f \\text{ is a measurable selection of }F\\}\\)\nConsider \\(\\mathcal{X} : \\{1,2\\} \\to \\mathcal{P}(\\{1,2,3\\}), 1 \\mapsto \\{1,2\\}, 2 \\mapsto \\{2,3\\}\\) \\[\n\\begin{cases}\n  f_{1}(1) = 1, f_{1}(2) = 2\\\\\n  f_{2}(1) = 1, f_{2}(2) = 3\\\\\n  f_{3}(1) = 2, f_{3}(2) = 2\\\\\n  f_{4}(1) = 2, f_{4}(2) = 3\n\\end{cases} \\Rightarrow E[\\mathcal{X}] = \\{E(f_{1}), E(f_{2}), E(f_{3}), E(f_{4})\\} \\stackrel{\\mathbb{P} = U\\{1,2\\}}{=} \\{1.5, 2, 2.5\\}\n\\]"
+  },
+  {
+    "objectID": "about.html#a-little-note-on-support-functions",
+    "href": "about.html#a-little-note-on-support-functions",
+    "title": "Robust Bayesian Inference for Set-Identified Models",
+    "section": "A little note on support functions",
+    "text": "A little note on support functions\n\nDefinition: Let \\(A \\subseteq \\mathbb{R}^{n}\\), then the support function of \\(A\\) is \\(\\sigma_{A} : \\mathbb{R}^{n} \\to \\mathbb{R} \\cup \\{+\\infty\\}\\) defined by \\[\n\\sigma_A(v) = \\sup_{x \\in A}\\langle q,x \\rangle\n\\]\nWhy? Support functions provide a characterisation of closed convex sets = convex hulls. So instead of working over the space of all possible sets, we can work over the function space \\(\\{f | f:\\mathbb{R}^{n} \\to \\mathbb{R} \\cup \\{+\\infty\\}\\}\\), where there is a lot more theory (see linear forms).\nIn the context of this paper, they come up a lot."
+  },
+  {
+    "objectID": "about.html#picture-of-support-functions",
+    "href": "about.html#picture-of-support-functions",
+    "title": "Robust Bayesian Inference for Set-Identified Models",
+    "section": "Picture of support functions",
+    "text": "Picture of support functions\n\nLeft: \\(\\sigma_{A}(p) = ||p|| h\\), Right: \\(\\sigma_{A}(p) = -||p|| h\\)"
+  },
+  {
+    "objectID": "about.html#why-the-aumann-expectation-and-why-the-set-of-posterior-means",
+    "href": "about.html#why-the-aumann-expectation-and-why-the-set-of-posterior-means",
+    "title": "Robust Bayesian Inference for Set-Identified Models",
+    "section": "Why the Aumann expectation and why the set of posterior means?",
+    "text": "Why the Aumann expectation and why the set of posterior means?\n\nConsider 1D case \\(\\Theta \\subseteq \\mathbb{R}\\) then \\[\n\\begin{align*}\n&E^{A}_{\\phi |Y}[co(IS_{\\theta}(\\phi))] = \\left[E^{A}_{\\phi |Y}[l(\\phi)], E^{A}_{\\phi |Y}[u(\\phi)]\\right]\\\\\n&l(\\phi) = \\inf\\{\\theta | \\theta \\in IS_{\\theta}(\\phi)\\}, \\quad u(\\phi) = \\sup\\{\\theta | \\theta \\in IS_{\\theta}(\\phi)\\}\n\\end{align*}\n\\]\nIn a more general setting for for \\(A  := IS_{\\theta}(\\phi)\\) given \\(\\sigma_{A}(q) :\\mathbb{R}^{n} \\to \\mathbb{R} \\cup \\{+\\infty\\}\\), we have \\(\\sigma_{E^{A}_{\\phi|Y}[co(IS_{\\theta}(\\phi))]} = E_{\\phi |Y}[\\sigma_{IS_{\\theta}(\\phi)}]\\)\nNote \\(\\sigma_{[a,b]}(v) = \\begin{cases} bv \\text{ if } v &gt;0\\\\ av \\text{ if } v&lt;0 \\\\ 0 \\text{ if } v = 0\\end{cases}\\)\nQ: Is the true parameter always going to be in this set?\n\n\nNote: They claim that the expectation of the support function can be calculated by monte carlo, how easy that would be I do not know"
+  },
+  {
+    "objectID": "about.html#robust-credible-regions",
+    "href": "about.html#robust-credible-regions",
+    "title": "Robust Bayesian Inference for Set-Identified Models",
+    "section": "Robust credible regions",
+    "text": "Robust credible regions\n\nThe motivation for this paper was that Frequentists and Bayesians used to disagree on inference in set identified models\nFrom a frequentist perspective the Bayesian 95% credible region coincides with the Frequentist 95% confidence interval. I.e. they contain the true parameter 95% of the time.\nIn set identification, the Bayesian credible region concentrates strictly within the identified set (see Moon and Schorfheide 2012) and thus contains the true parameter all of the time for some parameters or never for other parameter values in for example the sign identified case.\nThe solution: Robust credible intervals i.e. “The sets where the posterior credibility of \\(\\theta\\) is at least \\(\\alpha\\) no matter the posterior” \\(C_{\\alpha}\\) s.t. \\[\n\\underline{\\pi}_{\\theta | Y}(C_{\\alpha}) = \\pi_{\\phi|Y}(\\{\\phi | IS_{\\theta}(\\phi) \\subset D\\}) \\geq \\alpha\n\\]"
+  },
+  {
+    "objectID": "about.html#consistency",
+    "href": "about.html#consistency",
+    "title": "Robust Bayesian Inference for Set-Identified Models",
+    "section": "Consistency",
+    "text": "Consistency\n\nGiven true parameter value \\(\\phi_{0}\\)\nAssumption 2:\n\n\n\\(IS_{\\theta}(\\phi_{0})\\) is bounded and \\(IS_{\\theta}(\\cdot)\\) is continuous at \\(\\theta = \\theta_{0}\\) (note set continuity)\n\n\nPosterior of \\(\\phi\\) is consistent for \\(\\phi_{0}\\), \\(P_{Y^{\\infty}|\\theta_{0}}\\)-a.s.\n\n\n\\(\\exists \\delta &gt; 0\\) s.t. \\(IS_{\\theta}(\\phi) \\in L_{1+\\delta}(\\pi_{\\phi|Y})\\)\n\n\nTheorem 3: a) Under i) and ii) \\(\\lim_{T \\to \\infty } \\pi_{\\theta| Y^{T}}(\\{\\phi | d_{H}(IS_{\\theta}(\\phi), IS_{\\theta}(\\phi_{0})) &gt; \\epsilon\\}) = 0\\)\nTheorem 3: b) Suppose \\(\\pi_{\\phi}\\) is non atomic then \\(\\lim_{T \\to \\infty } d_{H}(E^{A}_{\\phi |Y}[co(IS_{\\theta}(\\phi))], co(IS_{\\theta}(\\phi_{0}))) = 0\\), \\(P_{Y^{\\infty}|\\phi_{0}}\\)-a.s.\n\n\n\nThe identified set \\(IS_{\\theta}(\\phi)\\) converges to \\(IS_{\\theta}(\\phi_{0})\\) under the Hausdorff Metric\nWe can use the posterior means as an approximation of the true identified set."
+  },
+  {
+    "objectID": "about.html#coverage-of-robust-credible-region",
+    "href": "about.html#coverage-of-robust-credible-region",
+    "title": "Robust Bayesian Inference for Set-Identified Models",
+    "section": "Coverage of robust credible region",
+    "text": "Coverage of robust credible region\n\nAsumption 3:\n\n\n\\(IS_{\\theta}(\\phi)\\) is \\(\\pi_{\\theta}\\)-a.s. closed and bounded and \\(IS_{\\theta}(\\phi_{0})\\) is closed and bounded\n\n\n\\(C_{\\alpha}\\) is in the class of closed and convex sets of \\(\\mathbb{R}^{k}\\)\n\n\nAssumption 4: To do with the convergence of the support function of the convex hull of the identified set to the true convex hull of the identified set.\n\nThe assumptions characterise the geometry of the identified set and if the support function is not differentiable at some point then the assumptions can be violated\n\n\n\nAssumption 3 is fairly technical and not very important in practice according to the authors Assumption 4 can be simplified in the case of a scalar value, it’s basically to do with whether the estimator satisfies the Bernstein-von-Mises property. While the second bit of the assumption simplifies to whether the lower and upper probability bounds are differentiable in an open interval around the true value with non zero derivative at the true value"
+  },
+  {
+    "objectID": "about.html#an-example-of-a-possible-violation",
+    "href": "about.html#an-example-of-a-possible-violation",
+    "title": "Robust Bayesian Inference for Set-Identified Models",
+    "section": "An example of a possible violation",
+    "text": "An example of a possible violation"
+  },
+  {
+    "objectID": "about.html#diagnostic-tools",
+    "href": "about.html#diagnostic-tools",
+    "title": "Robust Bayesian Inference for Set-Identified Models",
+    "section": "Diagnostic tools",
+    "text": "Diagnostic tools"
+  },
+  {
+    "objectID": "about.html#an-ar0-example-if-we-have-time",
+    "href": "about.html#an-ar0-example-if-we-have-time",
+    "title": "Robust Bayesian Inference for Set-Identified Models",
+    "section": "An AR(0) example, if we have time",
+    "text": "An AR(0) example, if we have time"
+  },
+  {
+    "objectID": "about.html#a-running-example",
+    "href": "about.html#a-running-example",
+    "title": "Robust Bayesian Inference for Set-Identified Models",
+    "section": "A running example",
+    "text": "A running example\n\nAs a running example I will be using an SVAR(0) of the form \\[Ay_{t} = \\epsilon_{t}, \\quad y_{t}, \\epsilon_{t} \\in \\mathbb{R}^{2}, A \\in \\mathcal{M}(2,2)\\]\nThe reduced form VAR(0) is \\(y_{t} = A^{-1}\\epsilon_{t} = \\eta_{t}\\) with \\(E[\\eta_{t}\\eta_{t}^{T}]= \\Sigma =  A^{-1}(A^{-1})^{T} = (A^{T}A)^{-1}\\)\nNote that \\(\\forall Q \\in \\mathcal{O}(2)\\), we have that \\(\\Sigma = (A^{T}QQ^{T}A)^{-1}\\), the model is set identified"
+  }
+]
