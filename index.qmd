@@ -11,9 +11,6 @@ editor:
 
 ```{r, echo = F}
 rm(list = ls())
-install.packages("gganimate")
-install.packages("gifski")
-install.packages("png")
 library(tidyverse)
 library(dplyr)
 library(ggplot2)
@@ -138,7 +135,7 @@ bell_curve <- dnorm(x_values, mean = mean_normal, sd = sd_normal)
 
 
 # Create a data frame for plotting
-data <- data.frame(x = x_values, y = combined_distribution, bell_curve = bell_curve, cdf = cdf)
+data <- data.frame(x = x_values, y = combined_distribution, bell_curve = bell_curve)
 
 # Plot the distribution and the bell curve with shading for the 95% CDF
 ggplot(data, aes(x = x)) +
@@ -162,7 +159,7 @@ ggplot(data, aes(x = x)) +
 
 
 ```
-
+---
 
 ### Example model, SVAR(0) {.smaller}
 

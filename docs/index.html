@@ -10,6 +10,7 @@
 <link href="site_libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles"><meta charset="utf-8">
   <meta name="generator" content="quarto-1.4.555">
 
+  <meta name="author" content="Riho Marten Pallum, Thanks to James Duffy">
   <title>ROBUST BAYESIAN INFERENCE FOR SET-IDENTIFIED MODELS</title>
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -328,6 +329,11 @@
   <h1 class="title">ROBUST BAYESIAN INFERENCE FOR SET-IDENTIFIED MODELS</h1>
 
 <div class="quarto-title-authors">
+<div class="quarto-title-author">
+<div class="quarto-title-author-name">
+Riho Marten Pallum, Thanks to James Duffy 
+</div>
+</div>
 </div>
 
 </section><section id="TOC">
@@ -358,11 +364,6 @@ P(\text{Hypothesis} | \text{Data}) =\frac{P(\text{Data} | \text{Hypothesis}) P(\
 </ul></li>
 </ul>
 </section>
-<section class="slide level2">
-
-<h3 class="smaller" id="example-model-bayesian-linear-regression">Example model, Bayesian linear regression</h3>
-<p>Given we chose the model <span class="math display">\[ y = \theta_{0} + \theta_{1}x + \epsilon\quad y,x,\theta_{0},\theta_{1} \in \mathbb{R}\\ \epsilon \sim \mathcal{N}(0,\sigma^{2}) \]</span> We set relatively uninformative priors <span class="math display">\[ \theta = \begin{pmatrix}\theta_{0}\\ \theta_{1}\end{pmatrix} \sim \mathcal{N}\left(\begin{pmatrix}0\\0\end{pmatrix},\begin{pmatrix}\sigma_{0}^{2} &amp; 0\\ 0 &amp; \sigma_{1}^{2}\end{pmatrix}\right) = \mathcal{N}(\mu_{prior}, \Sigma_{prior}),\quad \sigma^{2}\sim \text{Inv-Gamma}(\alpha, \beta)\]</span> The likelihood defined by the model given that we have <span class="math inline">\(k\)</span> samples follows the distribution <span class="math display">\[ y|\beta_{0},\beta_{1} \sim \mathcal{N}_{k}(X\beta, diag(\sigma^{2})), \quad X = \begin{pmatrix}1 &amp; x_{1}\\ ... &amp;...\\ 1 &amp; x_{k}\end{pmatrix}\]</span> Therefore the posterior is <span class="math display">\[ P((\theta_{0}, \theta_{1})^{T} | y) \propto \mathcal{N}\left(\Sigma_{posterior}\frac{1}{\sigma^{2}}X^{T}y, (\Sigma_{prior}^{-1} + \frac{1}{\sigma^{2}}X^{T}X)^{-1} \right)\]</span> !!!! Note the above is false, do not bother with the full distribution</p>
-</section>
 <section id="inference-credible-intervals" class="slide level2 smaller">
 <h2>Inference: credible intervals</h2>
 <ul>
@@ -386,7 +387,7 @@ P(\text{Hypothesis} | \text{Data}) =\frac{P(\text{Data} | \text{Hypothesis}) P(\
 <li class="fragment"><p>A parameter set <span class="math inline">\(\Theta\)</span> is said to be (point) identified if <span class="math inline">\(\Theta = \{\theta\}\)</span></p></li>
 <li class="fragment"><p>In a Bayesian setting parameters are set identified if <span class="math inline">\(\exists \theta_{0}, \theta_{1} \in \Theta ~ s.t. \theta_{0} \neq \theta_{1},\quad p(y | \theta_{0}) = p(y | \theta_{1}) ~ \forall y \in Y\)</span></p></li>
 <li class="fragment"><p>I.e. for any draw of the data the priors must be equal, but not necessarily the posteriors.</p></li>
-<li class="fragment"><p>Indeed the problem is that the posteriors can be different depending on the draw, even though the priors are the same</p></li>
+<li class="fragment"><p>Indeed the first problem is that the posteriors can be different depending on the draw, even though the priors are the same</p></li>
 </ul>
 <aside class="notes">
 <p>Q: but can we not just get rid of the flat region since we choose the prior? A: Yes and we will discuss that in the next slide</p>
@@ -401,6 +402,27 @@ P(\text{Hypothesis} | \text{Data}) =\frac{P(\text{Data} | \text{Hypothesis}) P(\
           overflow: hidden!important;
           display:block!important;
       }</style></aside>
+</section>
+<section class="slide level2">
+
+<h3 class="smaller" id="the-problem-with-credible-intervals-in-set-identified-models">The problem with credible intervals in set identified models</h3>
+<p>Asymptotically, the credible interval concentrates in the identified set, therefore for some parameter values the credible intervals never contain the true value. Rather it reflects priors.</p>
+
+<img data-src="index_files/figure-revealjs/unnamed-chunk-3-1.png" width="960" class="r-stretch"></section>
+<section class="slide level2">
+
+<h3 class="smaller" id="example-model-svar0">Example model, SVAR(0)</h3>
+<ul>
+<li class="fragment">Consider a SVAR(0) of the form <span class="math display">\[
+Ay_{t} = \epsilon_{t}, \quad y_{t}\in \mathbb{R}^{2}, A \in \mathcal{M}(2,2), \epsilon_{t} \sim \mathcal{N}(0, I_{2})
+\]</span></li>
+<li class="fragment">The reduced form VAR(0) (what we can observe and estimate) is <span class="math inline">\(y_{t} = A^{-1}\epsilon_{t} = \eta_{t}\)</span> with <span class="math inline">\(E[\eta_{t}\eta_{t}^{T}]= \Sigma =  A^{-1}(A^{-1})^{T} = (A^{T}A)^{-1}\)</span></li>
+<li class="fragment">Note that <span class="math inline">\(\forall Q \in \mathcal{O}(2)\)</span>, we have that <span class="math inline">\(\Sigma = (A^{T}QQ^{T}A)^{-1}\)</span>, the model is set identified</li>
+<li class="fragment">We will impose restrictions on <span class="math inline">\(A\)</span> later (this is what makes it a SVAR)</li>
+</ul>
+</section>
+<section class="slide level2">
+
 </section></section>
 <section>
 <section id="the-main-problem-and-solution-in-the-paper" class="title-slide slide level1 center">
@@ -436,7 +458,7 @@ P(\text{Hypothesis} | \text{Data}) =\frac{P(\text{Data} | \text{Hypothesis}) P(\
 
 <h3 id="set-identified-example">Set identified example</h3>
 
-<img data-src="index_files/figure-revealjs/unnamed-chunk-3-1.png" width="960" class="r-stretch"></section>
+<img data-src="index_files/figure-revealjs/unnamed-chunk-4-1.png" width="960" class="r-stretch"></section>
 <section class="slide level2">
 
 <h3 id="possible-unrevisable-priors-on-the-identified-sets">Possible unrevisable priors on the identified sets</h3>
@@ -446,7 +468,7 @@ P(\text{Hypothesis} | \text{Data}) =\frac{P(\text{Data} | \text{Hypothesis}) P(\
 <div class="cell-output-display">
 <div>
 <figure>
-<p><img data-src="index_files/figure-revealjs/unnamed-chunk-5-1.png" width="960"></p>
+<p><img data-src="index_files/figure-revealjs/unnamed-chunk-6-1.png" width="960"></p>
 </figure>
 </div>
 </div>
@@ -456,13 +478,45 @@ P(\text{Hypothesis} | \text{Data}) =\frac{P(\text{Data} | \text{Hypothesis}) P(\
 <div class="cell-output-display">
 <div>
 <figure>
-<p><img data-src="index_files/figure-revealjs/unnamed-chunk-6-1.png" width="960"></p>
+<p><img data-src="index_files/figure-revealjs/unnamed-chunk-7-1.png" width="960"></p>
 </figure>
 </div>
 </div>
 </div>
 </div>
 </div>
+</section>
+<section id="unrevisable-priors-in-the-case-of-a-svar0" class="slide level2 smaller">
+<h2>Unrevisable priors in the case of a SVAR(0)</h2>
+<ul>
+<li class="fragment">Remember the reduced for SVAR(0) <span class="math display">\[
+y_{t} = A^{-1}\epsilon_{t}    = \eta_{t} \quad E[\eta_{t}\eta_{t}^{T}]= \Sigma = (A^{T}QQ^{T}A)^{-1}  \forall Q \in \mathcal{O}(2)
+\]</span></li>
+<li class="fragment">Given <span class="math inline">\(A^{-1} = \begin{pmatrix}a_{00} &amp; a_{01} \\ a_{10} &amp; a_{11}\end{pmatrix}\)</span>, then any matrix that satisfies <span class="math inline">\(A^{-1}(A^{-1})^{T} = \Sigma\)</span> is consistent with any reasonable prior.</li>
+<li class="fragment">Normalising <span class="math inline">\(det(A^{-1}) = 1\)</span>, we get that solution to the following system is consistent with any reasonable prior</li>
+</ul>
+<p><span class="math display">\[
+\begin{cases}
+a_{11}^{2} + a_{01}^{2} = \sigma_{00}\\
+a_{10}^{2} + a^{2}_{00} = \sigma_{11}\\
+a_{10}a_{11} + a_{01}a_{00} = -\sigma_{12}
+\end{cases}
+\]</span></p>
+<aside class="notes">
+<p>We have three equations for four unkwowns. So we are going to get a hyperplane in four dimensions that is identified. If we naively set a prior, that e.g.&nbsp;<span class="math inline">\(a_{01}\)</span> is really big. Then we favour settings where where the hyperplane has a certain rotation. Setting a prior on the rotation though is setting a prior on the identified set itself. Hence we are slightly cheating. We are choosing <span class="math inline">\(\pi_{\theta |\phi}\)</span>. Choosing <span class="math inline">\(\pi_{\phi |Y}\)</span> is choosing the likely position of the hyperplane and coosing <span class="math inline">\(\pi_{\thet |Y}\)</span> is choosing a point in four dimensional space (that the identified variables can be rotated to fit?).</p>
+<p>The simplest form of prior trimming would be to assume that one of the variables are positive. This will limit us to a smaller set of rotations. But we are still only set identified. We also have to trim the priors to integrate to one on the identified set.</p>
+<p>It is difficult to visualise since we are already working in a four dimensional space, but we need a fifth dimension to visualise priors</p>
+<style type="text/css">
+        span.MJX_Assistive_MathML {
+          position:absolute!important;
+          clip: rect(1px, 1px, 1px, 1px);
+          padding: 1px 0 0 0!important;
+          border: 0!important;
+          height: 1px!important;
+          width: 1px!important;
+          overflow: hidden!important;
+          display:block!important;
+      }</style></aside>
 </section>
 <section id="the-solution-posterior-upper-and-lower-probabilities-theorem-1" class="slide level2 smaller">
 <h2>The solution: Posterior upper and lower probabilities (Theorem 1)</h2>
@@ -497,15 +551,15 @@ P(\text{Hypothesis} | \text{Data}) =\frac{P(\text{Data} | \text{Hypothesis}) P(\
 
 <h3 id="some-intuition-for-the-lower-probabilities">Some intuition for the lower probabilities</h3>
 
-<img data-src="index_files/figure-revealjs/unnamed-chunk-7-1.png" width="960" class="r-stretch"></section>
-<section class="slide level2">
-
-
 <img data-src="index_files/figure-revealjs/unnamed-chunk-8-1.png" width="960" class="r-stretch"></section>
 <section class="slide level2">
 
 
 <img data-src="index_files/figure-revealjs/unnamed-chunk-9-1.png" width="960" class="r-stretch"></section>
+<section class="slide level2">
+
+
+<img data-src="index_files/figure-revealjs/unnamed-chunk-10-1.png" width="960" class="r-stretch"></section>
 <section id="summarising-information-the-set-of-posterior-means" class="slide level2 smaller">
 <h2>Summarising information: The set of posterior means</h2>
 <ul>
@@ -577,7 +631,7 @@ P(\text{Hypothesis} | \text{Data}) =\frac{P(\text{Data} | \text{Hypothesis}) P(\
 <ul>
 <li class="fragment">The motivation for this paper was that Frequentists and Bayesians used to disagree on inference in set identified models</li>
 <li class="fragment">From a frequentist perspective the Bayesian 95% credible region coincides with the Frequentist 95% confidence interval. I.e. they contain the true parameter 95% of the time.</li>
-<li class="fragment">In set identification, the Bayesian credible region concentrates <em>strictly within</em> the identified set (see Moon and Schorfheide 2012) and thus contains the true parameter all of the time for some parameters or never for other parameter values in for example the sign identified case.</li>
+<li class="fragment">In set identification, the Bayesian credible region concentrates <em>strictly within</em> the identified set (see Moon and Schorfheide 2012) and thus contains the true parameter all of the time for some parameters or never for other parameter values.</li>
 <li class="fragment">The solution: Robust credible intervals i.e.&nbsp;“The sets where the posterior credibility of <span class="math inline">\(\theta\)</span> is at least <span class="math inline">\(\alpha\)</span> no matter the posterior” <span class="math inline">\(C_{\alpha}\)</span> s.t. <span class="math display">\[
 \underline{\pi}_{\theta | Y}(C_{\alpha}) = \pi_{\phi|Y}(\{\phi | IS_{\theta}(\phi) \subset D\}) \geq \alpha
 \]</span></li>
@@ -661,7 +715,7 @@ P(\text{Hypothesis} | \text{Data}) =\frac{P(\text{Data} | \text{Hypothesis}) P(\
 <section id="an-example-of-a-possible-violation" class="slide level2">
 <h2>An example of a possible violation</h2>
 
-<img data-src="index_files/figure-revealjs/unnamed-chunk-10-1.png" width="960" class="r-stretch"></section>
+<img data-src="index_files/figure-revealjs/unnamed-chunk-11-1.png" width="960" class="r-stretch"></section>
 <section class="slide level2">
 
 <h3 id="coverage-of-robust-credible-region-2">Coverage of robust credible region 2</h3>
@@ -691,16 +745,19 @@ P(\text{Hypothesis} | \text{Data}) =\frac{P(\text{Data} | \text{Hypothesis}) P(\
 <p>MAA 307: Convex optimization and optimal control. Samuel Amstutz. CMAP and Department of Applied Mathematics. Ecole polytechnique</p>
 <p>Moon, Hyungsik Roger, and Frank Schorfheide. “Bayesian and frequentist inference in partially identified models.” Econometrica 80.2 (2012): 755-782.</p>
 </section>
+<section id="graveyard" class="slide level2">
+<h2>Graveyard</h2>
+</section>
 <section id="a-running-example" class="slide level2">
 <h2>A running example</h2>
 <ul>
-<li class="fragment">As a running example I will be using an SVAR(0) of the form <span class="math display">\[Ay_{t} = \epsilon_{t}, \quad y_{t}, \epsilon_{t} \in \mathbb{R}^{2}, A \in \mathcal{M}(2,2)\]</span></li>
-<li class="fragment">The reduced form VAR(0) is <span class="math inline">\(y_{t} = A^{-1}\epsilon_{t} = \eta_{t}\)</span> with <span class="math inline">\(E[\eta_{t}\eta_{t}^{T}]= \Sigma =  A^{-1}(A^{-1})^{T} = (A^{T}A)^{-1}\)</span></li>
-<li class="fragment">Note that <span class="math inline">\(\forall Q \in \mathcal{O}(2)\)</span>, we have that <span class="math inline">\(\Sigma = (A^{T}QQ^{T}A)^{-1}\)</span>, the model is set identified</li>
+<li class="fragment"><p>But Any rotation <span class="math inline">\(\begin{pmatrix}\cos(\theta) &amp; -\sin(\theta) \\ \sin(\theta) &amp; \cos(\theta)end{pmatrix}\)</span> we have that <span class="math inline">\(\begin{pmatrix}\sqrt{\sigma_{11}}\cos(\theta) &amp; -\sin(\theta)\sqrt{\sigma_{11}}\\ -\frac{\sigma_{01}}{\sqrt{11}}\cos(\theta) + \sqrt{\sigma_{00}}\sin(\theta) &amp; -\frac{\sigma_{01}}{\sqrt{11}}(-\sin(\theta)) + \sqrt{\sigma_{00}}\cos(\theta)\end{pmatrix}\)</span> is also valid.</p></li>
+<li class="fragment"><p>As a running example I will be using an SVAR(0) of the form <span class="math display">\[Ay_{t} = \epsilon_{t}, \quad y_{t}, \epsilon_{t} \in \mathbb{R}^{2}, A \in \mathcal{M}(2,2)\]</span></p></li>
+<li class="fragment"><p>The reduced form VAR(0) is <span class="math inline">\(y_{t} = A^{-1}\epsilon_{t} = \eta_{t}\)</span> with <span class="math inline">\(E[\eta_{t}\eta_{t}^{T}]= \Sigma =  A^{-1}(A^{-1})^{T} = (A^{T}A)^{-1}\)</span></p></li>
+<li class="fragment"><p>Note that <span class="math inline">\(\forall Q \in \mathcal{O}(2)\)</span>, we have that <span class="math inline">\(\Sigma = (A^{T}QQ^{T}A)^{-1}\)</span>, the model is set identified</p></li>
 </ul>
 
-
-<img data-src="index_files/figure-revealjs/unnamed-chunk-11-1.png" width="960" class="r-stretch"><div class="quarto-auto-generated-content">
+<div class="quarto-auto-generated-content">
 <div class="footer footer-default">
 
 </div>

@@ -18,7 +18,7 @@
     "href": "index.html#set-identification",
     "title": "ROBUST BAYESIAN INFERENCE FOR SET-IDENTIFIED MODELS",
     "section": "Set identification",
-    "text": "Set identification\n\nA parameter set \\(\\Theta\\) is said to be (point) identified if \\(\\Theta = \\{\\theta\\}\\)\nIn a Bayesian setting parameters are set identified if \\(\\exists \\theta_{0}, \\theta_{1} \\in \\Theta ~ s.t. \\theta_{0} \\neq \\theta_{1},\\quad p(y | \\theta_{0}) = p(y | \\theta_{1}) ~ \\forall y \\in Y\\)\nI.e. for any draw of the data the priors must be equal, but not necessarily the posteriors.\nIndeed the problem is that the posteriors can be different depending on the draw, even though the priors are the same\n\n\nQ: but can we not just get rid of the flat region since we choose the prior? A: Yes and we will discuss that in the next slide"
+    "text": "Set identification\n\nA parameter set \\(\\Theta\\) is said to be (point) identified if \\(\\Theta = \\{\\theta\\}\\)\nIn a Bayesian setting parameters are set identified if \\(\\exists \\theta_{0}, \\theta_{1} \\in \\Theta ~ s.t. \\theta_{0} \\neq \\theta_{1},\\quad p(y | \\theta_{0}) = p(y | \\theta_{1}) ~ \\forall y \\in Y\\)\nI.e. for any draw of the data the priors must be equal, but not necessarily the posteriors.\nIndeed the first problem is that the posteriors can be different depending on the draw, even though the priors are the same\n\n\nQ: but can we not just get rid of the flat region since we choose the prior? A: Yes and we will discuss that in the next slide"
   },
   {
     "objectID": "index.html#the-problem-with-set-identified-models",
@@ -26,6 +26,13 @@
     "title": "ROBUST BAYESIAN INFERENCE FOR SET-IDENTIFIED MODELS",
     "section": "The problem with set identified models",
     "text": "The problem with set identified models\n\nLet \\(\\mathbf{Y} \\subseteq\\mathbb{R}^{d}\\) be the set of samples \\(Y\\) and \\(\\Theta\\subseteq\\mathbb{R}^{d}\\) be the set of possible parameter values \\(\\theta\\).\nSuppose we only observe a reduced form parameter \\(\\phi = g(\\theta)\\), where \\(g: \\Theta \\to \\Phi,\\quad g(\\theta) = g(\\theta^{'}) \\text{ iff }p(Y|\\theta) = p(Y|\\theta^{'}) \\forall Y\\in \\mathbf{Y}\\). Note in set identification \\(g\\) is not injective.\nDefine the identified set \\(IS_{\\theta}(\\phi) = \\{\\theta \\in \\Theta | g(\\theta) = \\phi\\}\\)\nIn set identified structural models the prior \\(\\pi_{\\theta|Y}\\) can be decomposed as \\(\\pi_{\\theta|Y}(\\cdot) = \\int_{\\Phi}\\pi_{\\theta |\\phi}(\\cdot)d\\pi_{\\phi|Y}\\).\n\\(\\pi_{\\phi |Y}\\) is updated as data comes in, \\(\\pi_{\\theta | \\phi}\\) is not.\nWe could also choose a \\(\\pi_{\\theta |\\phi}\\), but a good one is often not available. Bypassing this problem is the main contribution of this paper\nAny valid conditional prior must satisfy \\(\\pi_{\\theta |\\phi}(IS_{\\theta}(\\phi)) = 1, \\pi_{\\phi}\\text{-a.s.}\\)\n\n\n\\(\\Phi\\) is just the set of reduced form parameters. Note that g partitons \\(\\Theta\\) into equivalence classes and the set of identified sets is the partition induced by \\(g\\). The decomposition of the prior into reduced form and structural given reduced form priors is what creates the flat region. Technically the above image is not correct as we can put any kind of prior on the flat region."
+  },
+  {
+    "objectID": "index.html#unrevisable-priors-in-the-case-of-a-svar0",
+    "href": "index.html#unrevisable-priors-in-the-case-of-a-svar0",
+    "title": "ROBUST BAYESIAN INFERENCE FOR SET-IDENTIFIED MODELS",
+    "section": "Unrevisable priors in the case of a SVAR(0)",
+    "text": "Unrevisable priors in the case of a SVAR(0)\n\nRemember the reduced for SVAR(0) \\[\ny_{t} = A^{-1}\\epsilon_{t}    = \\eta_{t} \\quad E[\\eta_{t}\\eta_{t}^{T}]= \\Sigma = (A^{T}QQ^{T}A)^{-1}  \\forall Q \\in \\mathcal{O}(2)\n\\]\nGiven \\(A^{-1} = \\begin{pmatrix}a_{00} & a_{01} \\\\ a_{10} & a_{11}\\end{pmatrix}\\), then any matrix that satisfies \\(A^{-1}(A^{-1})^{T} = \\Sigma\\) is consistent with any reasonable prior.\nNormalising \\(det(A^{-1}) = 1\\), we get that solution to the following system is consistent with any reasonable prior\n\n\\[\n\\begin{cases}\na_{11}^{2} + a_{01}^{2} = \\sigma_{00}\\\\\na_{10}^{2} + a^{2}_{00} = \\sigma_{11}\\\\\na_{10}a_{11} + a_{01}a_{00} = -\\sigma_{12}\n\\end{cases}\n\\]\n\nWe have three equations for four unkwowns. So we are going to get a hyperplane in four dimensions that is identified. If we naively set a prior, that e.g. \\(a_{01}\\) is really big. Then we favour settings where where the hyperplane has a certain rotation. Setting a prior on the rotation though is setting a prior on the identified set itself. Hence we are slightly cheating. We are choosing \\(\\pi_{\\theta |\\phi}\\). Choosing \\(\\pi_{\\phi |Y}\\) is choosing the likely position of the hyperplane and coosing \\(\\pi_{\\thet |Y}\\) is choosing a point in four dimensional space (that the identified variables can be rotated to fit?).\nThe simplest form of prior trimming would be to assume that one of the variables are positive. This will limit us to a smaller set of rotations. But we are still only set identified. We also have to trim the priors to integrate to one on the identified set.\nIt is difficult to visualise since we are already working in a four dimensional space, but we need a fifth dimension to visualise priors"
   },
   {
     "objectID": "index.html#the-solution-posterior-upper-and-lower-probabilities-theorem-1",
@@ -74,7 +81,7 @@
     "href": "index.html#robust-credible-regions",
     "title": "ROBUST BAYESIAN INFERENCE FOR SET-IDENTIFIED MODELS",
     "section": "Robust credible regions",
-    "text": "Robust credible regions\n\nThe motivation for this paper was that Frequentists and Bayesians used to disagree on inference in set identified models\nFrom a frequentist perspective the Bayesian 95% credible region coincides with the Frequentist 95% confidence interval. I.e. they contain the true parameter 95% of the time.\nIn set identification, the Bayesian credible region concentrates strictly within the identified set (see Moon and Schorfheide 2012) and thus contains the true parameter all of the time for some parameters or never for other parameter values in for example the sign identified case.\nThe solution: Robust credible intervals i.e. “The sets where the posterior credibility of \\(\\theta\\) is at least \\(\\alpha\\) no matter the posterior” \\(C_{\\alpha}\\) s.t. \\[\n\\underline{\\pi}_{\\theta | Y}(C_{\\alpha}) = \\pi_{\\phi|Y}(\\{\\phi | IS_{\\theta}(\\phi) \\subset D\\}) \\geq \\alpha\n\\]"
+    "text": "Robust credible regions\n\nThe motivation for this paper was that Frequentists and Bayesians used to disagree on inference in set identified models\nFrom a frequentist perspective the Bayesian 95% credible region coincides with the Frequentist 95% confidence interval. I.e. they contain the true parameter 95% of the time.\nIn set identification, the Bayesian credible region concentrates strictly within the identified set (see Moon and Schorfheide 2012) and thus contains the true parameter all of the time for some parameters or never for other parameter values.\nThe solution: Robust credible intervals i.e. “The sets where the posterior credibility of \\(\\theta\\) is at least \\(\\alpha\\) no matter the posterior” \\(C_{\\alpha}\\) s.t. \\[\n\\underline{\\pi}_{\\theta | Y}(C_{\\alpha}) = \\pi_{\\phi|Y}(\\{\\phi | IS_{\\theta}(\\phi) \\subset D\\}) \\geq \\alpha\n\\]"
   },
   {
     "objectID": "index.html#consistency",
@@ -112,11 +119,18 @@
     "text": "An AR(0) example, if we have time"
   },
   {
+    "objectID": "index.html#graveyard",
+    "href": "index.html#graveyard",
+    "title": "ROBUST BAYESIAN INFERENCE FOR SET-IDENTIFIED MODELS",
+    "section": "Graveyard",
+    "text": "Graveyard"
+  },
+  {
     "objectID": "index.html#a-running-example",
     "href": "index.html#a-running-example",
     "title": "ROBUST BAYESIAN INFERENCE FOR SET-IDENTIFIED MODELS",
     "section": "A running example",
-    "text": "A running example\n\nAs a running example I will be using an SVAR(0) of the form \\[Ay_{t} = \\epsilon_{t}, \\quad y_{t}, \\epsilon_{t} \\in \\mathbb{R}^{2}, A \\in \\mathcal{M}(2,2)\\]\nThe reduced form VAR(0) is \\(y_{t} = A^{-1}\\epsilon_{t} = \\eta_{t}\\) with \\(E[\\eta_{t}\\eta_{t}^{T}]= \\Sigma =  A^{-1}(A^{-1})^{T} = (A^{T}A)^{-1}\\)\nNote that \\(\\forall Q \\in \\mathcal{O}(2)\\), we have that \\(\\Sigma = (A^{T}QQ^{T}A)^{-1}\\), the model is set identified"
+    "text": "A running example\n\nBut Any rotation \\(\\begin{pmatrix}\\cos(\\theta) & -\\sin(\\theta) \\\\ \\sin(\\theta) & \\cos(\\theta)end{pmatrix}\\) we have that \\(\\begin{pmatrix}\\sqrt{\\sigma_{11}}\\cos(\\theta) & -\\sin(\\theta)\\sqrt{\\sigma_{11}}\\\\ -\\frac{\\sigma_{01}}{\\sqrt{11}}\\cos(\\theta) + \\sqrt{\\sigma_{00}}\\sin(\\theta) & -\\frac{\\sigma_{01}}{\\sqrt{11}}(-\\sin(\\theta)) + \\sqrt{\\sigma_{00}}\\cos(\\theta)\\end{pmatrix}\\) is also valid.\nAs a running example I will be using an SVAR(0) of the form \\[Ay_{t} = \\epsilon_{t}, \\quad y_{t}, \\epsilon_{t} \\in \\mathbb{R}^{2}, A \\in \\mathcal{M}(2,2)\\]\nThe reduced form VAR(0) is \\(y_{t} = A^{-1}\\epsilon_{t} = \\eta_{t}\\) with \\(E[\\eta_{t}\\eta_{t}^{T}]= \\Sigma =  A^{-1}(A^{-1})^{T} = (A^{T}A)^{-1}\\)\nNote that \\(\\forall Q \\in \\mathcal{O}(2)\\), we have that \\(\\Sigma = (A^{T}QQ^{T}A)^{-1}\\), the model is set identified"
   },
   {
     "objectID": "about.html#bayes-rule",
