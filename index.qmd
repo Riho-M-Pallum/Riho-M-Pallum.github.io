@@ -1,12 +1,23 @@
 ---
 title: "ROBUST BAYESIAN INFERENCE FOR SET-IDENTIFIED MODELS"
+author: Riho Marten Pallum, Thanks to James Duffy
+format:
+  revealjs:
+    incremental: true   
+editor: 
+  visual
 ---
 
 
 ```{r, echo = F}
+rm(list = ls())
+install.packages("gganimate")
+install.packages("gifski")
+install.packages("png")
 library(tidyverse)
 library(dplyr)
 library(ggplot2)
+library(gganimate)
 
 ```
 
@@ -27,11 +38,6 @@ $$
 
 ---
 
-### Example model, Bayesian linear regression {.smaller}
-
-Given we chose the model $$ y = \theta_{0} + \theta_{1}x + \epsilon\quad y,x,\theta_{0},\theta_{1} \in \mathbb{R}\\ \epsilon \sim \mathcal{N}(0,\sigma^{2}) $$ We set relatively uninformative priors $$ \theta = \begin{pmatrix}\theta_{0}\\ \theta_{1}\end{pmatrix} \sim \mathcal{N}\left(\begin{pmatrix}0\\0\end{pmatrix},\begin{pmatrix}\sigma_{0}^{2} & 0\\ 0 & \sigma_{1}^{2}\end{pmatrix}\right) = \mathcal{N}(\mu_{prior}, \Sigma_{prior}),\quad \sigma^{2}\sim \text{Inv-Gamma}(\alpha, \beta)$$ The likelihood defined by the model given that we have $k$ samples follows the distribution $$ y|\beta_{0},\beta_{1} \sim \mathcal{N}_{k}(X\beta, diag(\sigma^{2})), \quad X = \begin{pmatrix}1 & x_{1}\\ ... &...\\ 1 & x_{k}\end{pmatrix}$$ Therefore the posterior is $$ P((\theta_{0}, \theta_{1})^{T} | y) \propto \mathcal{N}\left(\Sigma_{posterior}\frac{1}{\sigma^{2}}X^{T}y, (\Sigma_{prior}^{-1} + \frac{1}{\sigma^{2}}X^{T}X)^{-1} \right)$$ !!!! Note the above is false, do not bother with the full distribution
-
----
 
 ## Inference: credible intervals {.smaller}
 
@@ -89,11 +95,86 @@ Given we chose the model $$ y = \theta_{0} + \theta_{1}x + \epsilon\quad y,x,\th
 
 -  I.e. for any draw of the data the priors must be equal, but not necessarily the posteriors.
 
-- Indeed the problem is that the posteriors can be different depending on the draw, even though the priors are the same
+- Indeed the first problem is that the posteriors can be different depending on the draw, even though the priors are the same
 
 ::: {.notes}
   Q: but can we not just get rid of the flat region since we choose the prior? A: Yes and we will discuss that in    the next slide
 :::
+
+---
+
+### The problem with credible intervals in set identified models {.smaller}
+
+Asymptotically, the credible interval concentrates in the identified set, therefore for some parameter values the credible intervals never contain the true value. Rather it reflects priors. 
+```{r, echo = F}
+n <- 1000  # Number of samples
+mean_flat <- 0  # Mean of the flat region
+width_flat <- 3  # Width of the flat region (wide for a flat middle region)
+decay_width <- 0.5  # Width of the smooth decay region
+
+# Generate x values
+x_values <- seq(-width_flat - decay_width, width_flat + decay_width, length.out = n)
+
+# Create flat middle region (uniform distribution)
+flat_region <- ifelse(abs(x_values) <= width_flat, 1, 0)
+
+
+# Create smooth decay using a sigmoid function (logistic decay)
+decay_left <- 1 / (1 + exp(-10 * (x_values[x_values < - width_flat] + width_flat)))*2
+decay_right <- 2-1 / (1 + exp(-10 * (x_values[x_values > width_flat] - width_flat)))*2
+
+# Combine the regions: flat in the middle and sigmoid decay on the edges
+combined_distribution <- flat_region
+
+# Combine decay regions smoothly on both ends
+combined_distribution[x_values < -width_flat] <- decay_left
+combined_distribution[x_values > width_flat] <- decay_right
+combined_distribution <- combined_distribution / sum(combined_distribution) * n /7
+
+
+mean_normal <- 0  # Mean of the normal distribution
+sd_normal <- 2  # Standard deviation of the normal distribution
+bell_curve <- dnorm(x_values, mean = mean_normal, sd = sd_normal)
+
+
+# Create a data frame for plotting
+data <- data.frame(x = x_values, y = combined_distribution, bell_curve = bell_curve, cdf = cdf)
+
+# Plot the distribution and the bell curve with shading for the 95% CDF
+ggplot(data, aes(x = x)) +
+  # Plot the combined distribution (original plot)
+  geom_line(aes(y = y), color = "darkblue") +
+  geom_area(aes(y = y), fill = "lightblue", alpha = 0.5) +
+  
+  # Add the bell curve (normal distribution)
+  geom_line(aes(y = bell_curve), color = "red", size = 1) +
+  
+  # Axis limits and labels
+  ylim(-0.1, 0.2) +
+  xlim(-4, 4) +
+  labs(title = "Set Identified Middle Region with Bell Curve prior",
+       x = "Value", y = "Density") +
+  
+  # Theme settings
+  theme_minimal() +
+  theme(axis.text.y = element_blank())  # Hide y-axis text
+
+
+
+```
+
+
+### Example model, SVAR(0) {.smaller}
+
+-   Consider a SVAR(0) of the form 
+$$
+Ay_{t} = \epsilon_{t}, \quad y_{t}\in \mathbb{R}^{2}, A \in \mathcal{M}(2,2), \epsilon_{t} \sim \mathcal{N}(0, I_{2})
+$$
+- The reduced form VAR(0) (what we can observe and estimate) is $y_{t} = A^{-1}\epsilon_{t} = \eta_{t}$ with $E[\eta_{t}\eta_{t}^{T}]= \Sigma =  A^{-1}(A^{-1})^{T} = (A^{T}A)^{-1}$
+-   Note that $\forall Q \in \mathcal{O}(2)$, we have that $\Sigma = (A^{T}QQ^{T}A)^{-1}$, the model is set identified
+- We will impose restrictions on $A$ later (this is what makes it a SVAR)
+
+---
 
 
 # The main problem and solution in the paper
@@ -117,6 +198,7 @@ Given we chose the model $$ y = \theta_{0} + \theta_{1}x + \epsilon\quad y,x,\th
 
 ::: {.notes}
 $\Phi$ is just the set of reduced form parameters. Note that g partitons $\Theta$ into equivalence classes and the set of identified sets is the partition induced by $g$. The decomposition of the prior into reduced form and structural given reduced form priors is what creates the flat region. Technically the above image is not correct as we can put any kind of prior on the flat region.
+
 :::
 
 ---
@@ -246,8 +328,34 @@ print(plot + geom_line(aes(x = x_values, y = truncated_normal)))
 :::
 :::
 
+---
 
+## Unrevisable priors in the case of a SVAR(0) {.smaller}
 
+- Remember the reduced for SVAR(0)
+$$
+y_{t} = A^{-1}\epsilon_{t}    = \eta_{t} \quad E[\eta_{t}\eta_{t}^{T}]= \Sigma = (A^{T}QQ^{T}A)^{-1}  \forall Q \in \mathcal{O}(2)
+$$
+- Given $A^{-1} = \begin{pmatrix}a_{00} & a_{01} \\ a_{10} & a_{11}\end{pmatrix}$, then any matrix that satisfies $A^{-1}(A^{-1})^{T} = \Sigma$ is consistent with any reasonable prior.
+- Normalising $det(A^{-1}) = 1$, we get that solution to the following system is consistent with any reasonable prior
+
+$$
+\begin{cases}
+a_{11}^{2} + a_{01}^{2} = \sigma_{00}\\
+a_{10}^{2} + a^{2}_{00} = \sigma_{11}\\
+a_{10}a_{11} + a_{01}a_{00} = -\sigma_{12}
+\end{cases}
+$$
+
+::: {.notes}
+We have three equations for four unkwowns. So we are going to get a hyperplane in four dimensions that is identified.
+If we naively set a prior, that e.g. $a_{01}$ is really big. Then we favour settings where where the hyperplane has a certain rotation.
+Setting a prior on the rotation though is setting a prior on the identified set itself. Hence we are slightly cheating. We are choosing $\pi_{\theta |\phi}$. Choosing $\pi_{\phi |Y}$ is choosing the likely position of the hyperplane and coosing $\pi_{\thet |Y}$ is choosing a point in four dimensional space (that the identified variables can be rotated to fit?).
+
+The simplest form of prior trimming would be to assume that one of the variables are positive. This will limit us to a smaller set of rotations. But we are still only set identified. We also have to trim the priors to integrate to one on the identified set.
+
+It is difficult to visualise since we are already working in a four dimensional space, but we need a fifth dimension to visualise priors
+:::
 ---
 
 ## The solution: Posterior upper and lower probabilities (Theorem 1) {.smaller}
@@ -326,7 +434,6 @@ plot + # Vertical line for x (point on axis)
   geom_rect(aes(xmin = 4, xmax = 9, ymin = 0, ymax = 2), fill = "lightblue", alpha = 0.5, title = "Uniform") +
   annotate("text", x = 8, y = 3, label = "Uniform distribution on [5,9]", size = 5, color = "black")
 
-#print(plot + geom_line(aes(x = x_values, y = crazy_values)))
 ```
 
 ---
@@ -398,7 +505,7 @@ Note: They claim that the expectation of the support function can be calculated 
 ## Robust credible regions {.smaller}
 - The motivation for this paper was that Frequentists and Bayesians used to disagree on inference in set identified models
 - From a frequentist perspective the Bayesian 95% credible region coincides with the Frequentist 95% confidence interval. I.e. they contain the true parameter 95% of the time.
-- In set identification, the Bayesian credible region concentrates *strictly within* the identified set (see Moon and Schorfheide 2012) and thus contains the true parameter all of the time for some parameters or never for other parameter values in for example the sign identified case. 
+- In set identification, the Bayesian credible region concentrates *strictly within* the identified set (see Moon and Schorfheide 2012) and thus contains the true parameter all of the time for some parameters or never for other parameter values. 
 - The solution: Robust credible intervals i.e. "The sets where the posterior credibility of $\theta$ is at least $\alpha$ no matter the posterior" $C_{\alpha}$ s.t.
 $$
 \underline{\pi}_{\theta | Y}(C_{\alpha}) = \pi_{\phi|Y}(\{\phi | IS_{\theta}(\phi) \subset D\}) \geq \alpha
@@ -505,47 +612,13 @@ MAA 307: Convex optimization and optimal control. Samuel Amstutz. CMAP and Depar
 Moon, Hyungsik Roger, and Frank Schorfheide. "Bayesian and frequentist inference in partially identified models." Econometrica 80.2 (2012): 755-782.
 
 
+
+## Graveyard
 ## A running example
+
+- But Any rotation $\begin{pmatrix}\cos(\theta) & -\sin(\theta) \\ \sin(\theta) & \cos(\theta)end{pmatrix}$ we have that $\begin{pmatrix}\sqrt{\sigma_{11}}\cos(\theta) & -\sin(\theta)\sqrt{\sigma_{11}}\\ -\frac{\sigma_{01}}{\sqrt{11}}\cos(\theta) + \sqrt{\sigma_{00}}\sin(\theta) & -\frac{\sigma_{01}}{\sqrt{11}}(-\sin(\theta)) + \sqrt{\sigma_{00}}\cos(\theta)\end{pmatrix}$ is also valid.
 
 -   As a running example I will be using an SVAR(0) of the form $$Ay_{t} = \epsilon_{t}, \quad y_{t}, \epsilon_{t} \in \mathbb{R}^{2}, A \in \mathcal{M}(2,2)$$
 -   The reduced form VAR(0) is $y_{t} = A^{-1}\epsilon_{t} = \eta_{t}$ with $E[\eta_{t}\eta_{t}^{T}]= \Sigma =  A^{-1}(A^{-1})^{T} = (A^{T}A)^{-1}$
 -   Note that $\forall Q \in \mathcal{O}(2)$, we have that $\Sigma = (A^{T}QQ^{T}A)^{-1}$, the model is set identified
 
-```{r, echo = F}
-# Now for a flat model
-n <- 10000  # Number of samples
-mean_flat <- 0  # Mean of the flat region
-width_flat <- 3  # Width of the flat region (wide for a flat middle region)
-decay_width <- 0.5  # Width of the smooth decay region
-
-# Generate x values
-x_values <- seq(-width_flat - decay_width, width_flat + decay_width, length.out = n)
-
-# Create flat middle region (uniform distribution)
-flat_region <- ifelse(abs(x_values) <= width_flat, 1, 0)
-
-# Create smooth decay using a sigmoid function (logistic decay)
-decay_left <- 1 / (1 + exp(-10 * (x_values[x_values < -width_flat] + width_flat)))
-decay_right <- 1-1 / (1 + exp(-10 * (x_values[x_values > width_flat] - width_flat)))
-
-# Combine the regions: flat in the middle and sigmoid decay on the edges
-combined_distribution <- flat_region
-
-# Combine decay regions smoothly on both ends
-combined_distribution[x_values < -width_flat] <- decay_left
-combined_distribution[x_values > width_flat] <- decay_right
-
-# Plot the distribution
-ggplot(data.frame(x = x_values, y = combined_distribution), aes(x = x, y = y)) +
-  geom_line(color = "darkblue") +
-  ylim(-0.5,1.5) +
-  xlim(-4,4)+
-  geom_area(fill = "lightblue", alpha = 0.5) +
-  labs(title = "Set identified Middle Region",
-       x = "Value", y = "Density") +
-  theme_minimal() +
-  theme(
-    axis.text.y = element_blank(),  # Hide y-axis text
-  )
-
-```
