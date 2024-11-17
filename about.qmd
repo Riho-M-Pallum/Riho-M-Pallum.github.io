@@ -9,18 +9,18 @@ library(ggplot2)
 
 # Quick overview of Bayesian statistics
 
-## Bayes rule
-
+## Bayes rule {.smaller}
+$Y \in \mathbf{Y}$ be a sample from the space of all samples, $\theta \in \Theta$ be a parameter from all possible parameter values
 $$
-P(\text{Hypothesis} | \text{Data}) =\frac{P(\text{Data} | \text{Hypothesis}) P(\text{Hypothesis})}{P(\text{data})}
+P(\theta | Y) =\frac{P(Y | \theta) P(\theta)}{P(Y)}
 $$
-- Prior: Our Hyptothesis (= parameters) before seeing the data, set by the researcher
+- Prior: Belief about parameters before seeing the data, set by the researcher.
 
-- Likelihood: The probability of observing the data given the Hypothesis, our "model"
+- Likelihood: The probability of observing the data given the parameters, the endpoint of frequentism.
 
-- Posterior: Belief about the Hypothesis (= parameters) given the data, the point of Bayesian statistics
+- Posterior: Belief about parameters given the data, the point of Bayesian statistics.
 
-  - Evidence: (Usually unobserved) normalising constant
+- Evidence: (Usually unobserved) normalising constant.
 
 ---
 

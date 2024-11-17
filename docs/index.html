@@ -10,6 +10,7 @@
 <link href="site_libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles"><meta charset="utf-8">
   <meta name="generator" content="quarto-1.4.555">
 
+  <meta name="author" content="Riho Marten Pallum, Thanks to James Duffy">
   <title>ROBUST BAYESIAN INFERENCE FOR SET-IDENTIFIED MODELS</title>
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -328,6 +329,11 @@
   <h1 class="title">ROBUST BAYESIAN INFERENCE FOR SET-IDENTIFIED MODELS</h1>
 
 <div class="quarto-title-authors">
+<div class="quarto-title-author">
+<div class="quarto-title-author-name">
+Riho Marten Pallum, Thanks to James Duffy 
+</div>
+</div>
 </div>
 
 </section><section id="TOC">
@@ -345,28 +351,32 @@
 <h1>Quick overview of Bayesian statistics</h1>
 
 </section>
-<section id="bayes-rule" class="slide level2">
+<section id="bayes-rule" class="slide level2 smaller">
 <h2>Bayes rule</h2>
-<p><span class="math display">\[
-P(\text{Hypothesis} | \text{Data}) =\frac{P(\text{Data} | \text{Hypothesis}) P(\text{Hypothesis})}{P(\text{data})}
-\]</span> - Prior: Our Hyptothesis (= parameters) before seeing the data, set by the researcher</p>
+<p><span class="math inline">\(Y \in \mathbf{Y}\)</span> be a sample from the space of all samples, <span class="math inline">\(\theta \in \Theta\)</span> be a parameter from all possible parameter values <span class="math display">\[
+P(\theta | Y) =\frac{P(Y | \theta) P(\theta)}{P(Y)}
+\]</span></p>
 <ul>
-<li class="fragment"><p>Likelihood: The probability of observing the data given the Hypothesis, our “model”</p></li>
-<li class="fragment"><p>Posterior: Belief about the Hypothesis (= parameters) given the data, the point of Bayesian statistics</p>
-<ul>
-<li class="fragment">Evidence: (Usually unobserved) normalising constant</li>
-</ul></li>
+<li class="fragment"><p>Prior: Belief about parameters before seeing the data, set by the researcher.</p></li>
+<li class="fragment"><p>Likelihood: The probability of observing the data given the parameters, the endpoint of frequentism.</p></li>
+<li class="fragment"><p>Posterior: Belief about parameters given the data, the point of Bayesian statistics.</p></li>
+<li class="fragment"><p>Evidence: (Usually unobserved) normalising constant.</p></li>
 </ul>
 </section>
-<section class="slide level2">
-
-<h3 class="smaller" id="example-model-bayesian-linear-regression">Example model, Bayesian linear regression</h3>
-<p>Given we chose the model <span class="math display">\[ y = \theta_{0} + \theta_{1}x + \epsilon\quad y,x,\theta_{0},\theta_{1} \in \mathbb{R}\\ \epsilon \sim \mathcal{N}(0,\sigma^{2}) \]</span> We set relatively uninformative priors <span class="math display">\[ \theta = \begin{pmatrix}\theta_{0}\\ \theta_{1}\end{pmatrix} \sim \mathcal{N}\left(\begin{pmatrix}0\\0\end{pmatrix},\begin{pmatrix}\sigma_{0}^{2} &amp; 0\\ 0 &amp; \sigma_{1}^{2}\end{pmatrix}\right) = \mathcal{N}(\mu_{prior}, \Sigma_{prior}),\quad \sigma^{2}\sim \text{Inv-Gamma}(\alpha, \beta)\]</span> The likelihood defined by the model given that we have <span class="math inline">\(k\)</span> samples follows the distribution <span class="math display">\[ y|\beta_{0},\beta_{1} \sim \mathcal{N}_{k}(X\beta, diag(\sigma^{2})), \quad X = \begin{pmatrix}1 &amp; x_{1}\\ ... &amp;...\\ 1 &amp; x_{k}\end{pmatrix}\]</span> Therefore the posterior is <span class="math display">\[ P((\theta_{0}, \theta_{1})^{T} | y) \propto \mathcal{N}\left(\Sigma_{posterior}\frac{1}{\sigma^{2}}X^{T}y, (\Sigma_{prior}^{-1} + \frac{1}{\sigma^{2}}X^{T}X)^{-1} \right)\]</span> !!!! Note the above is false, do not bother with the full distribution</p>
+<section id="inference-credible-intervals-vs-confidence-intervals." class="slide level2">
+<h2>Inference: credible intervals vs confidence intervals.</h2>
+<ul>
+<li class="fragment"><strong>Frequentist Interpretation</strong></li>
+<li class="fragment">A range of values that contain the true parameter value a certain amount of time over repeated experiments.</li>
+<li class="fragment"><strong>Bayesian Interpretation</strong></li>
+<li class="fragment">A range of values within which the true parameter lies with a certain probability, given the data and prior beliefs.</li>
+<li class="fragment">Direct statement about the probability of the true parameter being within the interval. No need to think about repeated experiments.</li>
+</ul>
 </section>
 <section id="inference-credible-intervals" class="slide level2 smaller">
 <h2>Inference: credible intervals</h2>
 <ul>
-<li class="fragment"><p>Say, given <span class="math inline">\(Y^{n} = (y_{1},...,y_{n})\)</span> the posterior $ P(| Y^{n}) $ looks approximately like</p></li>
+<li class="fragment"><p>Say, given some sample <span class="math inline">\(Y = (y_{1},...,y_{n})\)</span> the posterior <span class="math inline">\(P(\theta | Y)\)</span> looks approximately like</p></li>
 <li class="fragment"><div class="cell">
 <div class="cell-output-display">
 <div>
@@ -376,17 +386,20 @@ P(\text{Hypothesis} | \text{Data}) =\frac{P(\text{Data} | \text{Hypothesis}) P(\
 </div>
 </div>
 </div></li>
-<li class="fragment"><p>Non unique 95% credible interval</p></li>
-<li class="fragment"><p>Usual workaround of minimising width of interval</p></li>
+<li class="fragment"><p>A 95% credible interval contains 95% of the probability mass. But it’s non unique 95% credible interval</p></li>
+<li class="fragment"><p>Usual workaround of minimising width of interval.</p></li>
 </ul>
 </section>
 <section id="set-identification" class="slide level2">
 <h2>Set identification</h2>
+<p><span class="math display">\[
+P(\theta | Y) =\frac{P(Y | \theta) P(\theta)}{P(Y)}
+\]</span></p>
 <ul>
-<li class="fragment"><p>A parameter set <span class="math inline">\(\Theta\)</span> is said to be (point) identified if <span class="math inline">\(\Theta = \{\theta\}\)</span></p></li>
-<li class="fragment"><p>In a Bayesian setting parameters are set identified if <span class="math inline">\(\exists \theta_{0}, \theta_{1} \in \Theta ~ s.t. \theta_{0} \neq \theta_{1},\quad p(y | \theta_{0}) = p(y | \theta_{1}) ~ \forall y \in Y\)</span></p></li>
-<li class="fragment"><p>I.e. for any draw of the data the priors must be equal, but not necessarily the posteriors.</p></li>
-<li class="fragment"><p>Indeed the problem is that the posteriors can be different depending on the draw, even though the priors are the same</p></li>
+<li class="fragment"><p>A parameter <span class="math inline">\(\theta \in \Theta\)</span> is said to be point identified if <span class="math inline">\(\forall \theta^{'} \neq \theta \quad p(y | \theta) &gt; p(y | \theta^{'}) ~ \forall y \in Y\)</span></p></li>
+<li class="fragment"><p>Set identification is the negation of this <span class="math inline">\(\exists \theta_{0}, \theta_{1} \in \Theta ~ s.t. \theta_{0} \neq \theta_{1},\quad p(y | \theta_{0}) = p(y | \theta_{1}) ~ \forall y \in Y\)</span></p></li>
+<li class="fragment"><p>Set identification: For any draw of the data the likelihoods must be equal.</p></li>
+<li class="fragment"><p>Implication: Posterior depends solely on the prior.</p></li>
 </ul>
 <aside class="notes">
 <p>Q: but can we not just get rid of the flat region since we choose the prior? A: Yes and we will discuss that in the next slide</p>
@@ -401,25 +414,67 @@ P(\text{Hypothesis} | \text{Data}) =\frac{P(\text{Data} | \text{Hypothesis}) P(\
           overflow: hidden!important;
           display:block!important;
       }</style></aside>
-</section></section>
+</section>
+<section class="slide level2">
+
+<h3 class="smaller" id="disagreement-between-frequentists-and-bayesians-in-set-identified-models">Disagreement between frequentists and bayesians in set identified models</h3>
+<ul>
+<li class="fragment">Frequentist confidence intervals contain true identified set with specified probability</li>
+<li class="fragment">Credible intervals concentrate strictly within the identified set: Over repeated samples sometimes the true parameter can sometimes never be in the credible interval.</li>
+</ul>
+</section>
+<section class="slide level2">
+
+<h3 id="graphical-intuition">Graphical intuition</h3>
+
+<img data-src="index_files/figure-revealjs/unnamed-chunk-3-1.png" width="960" class="r-stretch"></section></section>
 <section>
 <section id="the-main-problem-and-solution-in-the-paper" class="title-slide slide level1 center">
 <h1>The main problem and solution in the paper</h1>
 
 </section>
-<section id="the-problem-with-set-identified-models" class="slide level2 smaller">
-<h2>The problem with set identified models</h2>
+<section id="introduction-to-notation" class="slide level2 smaller">
+<h2>Introduction to notation</h2>
+<p><span class="math display">\[
+P(\theta | Y) =\frac{P(Y | \theta) P(\theta)}{P(Y)}
+\]</span></p>
 <ul>
 <li class="fragment"><p>Let <span class="math inline">\(\mathbf{Y} \subseteq\mathbb{R}^{d}\)</span> be the set of samples <span class="math inline">\(Y\)</span> and <span class="math inline">\(\Theta\subseteq\mathbb{R}^{d}\)</span> be the set of possible parameter values <span class="math inline">\(\theta\)</span>.</p></li>
 <li class="fragment"><p>Suppose we only observe a reduced form parameter <span class="math inline">\(\phi = g(\theta)\)</span>, where <span class="math inline">\(g: \Theta \to \Phi,\quad g(\theta) = g(\theta^{'}) \text{ iff }p(Y|\theta) = p(Y|\theta^{'}) \forall Y\in \mathbf{Y}\)</span>. Note in set identification <span class="math inline">\(g\)</span> is not injective.</p></li>
-<li class="fragment"><p>Define the identified set <span class="math inline">\(IS_{\theta}(\phi) = \{\theta \in \Theta | g(\theta) = \phi\}\)</span></p></li>
-<li class="fragment"><p>In set identified structural models the prior <span class="math inline">\(\pi_{\theta|Y}\)</span> can be decomposed as <span class="math inline">\(\pi_{\theta|Y}(\cdot) = \int_{\Phi}\pi_{\theta |\phi}(\cdot)d\pi_{\phi|Y}\)</span>.</p></li>
-<li class="fragment"><p><span class="math inline">\(\pi_{\phi |Y}\)</span> is updated as data comes in, <span class="math inline">\(\pi_{\theta | \phi}\)</span> is not.</p></li>
-<li class="fragment"><p>We could also choose a <span class="math inline">\(\pi_{\theta |\phi}\)</span>, but a good one is often not available. Bypassing this problem is the main contribution of this paper</p></li>
-<li class="fragment"><p>Any valid conditional prior must satisfy <span class="math inline">\(\pi_{\theta |\phi}(IS_{\theta}(\phi)) = 1, \pi_{\phi}\text{-a.s.}\)</span></p></li>
+<li class="fragment"><p>Define the identified set <span class="math inline">\(IS_{\theta}(\phi) = \{\theta \in \Theta | g(\theta) = \phi\} = g^{-1}(\{\phi\})\)</span>.</p></li>
+<li class="fragment"><p>Note that the identified sets constitute a partition of <span class="math inline">\(\Theta\)</span>.</p></li>
+</ul>
+</section>
+<section class="slide level2">
+
+<h3 class="smaller" id="example-model-svar0">Example model, SVAR(0)</h3>
+<ul>
+<li class="fragment">Consider a SVAR(0) of the form <span class="math display">\[
+Ay_{t} = u_{t}, \quad y_{t}\in \mathbb{R}^{2}, A \in \mathcal{M}(2,2), u_{t} \sim \mathcal{N}(0, I_{2})
+\]</span></li>
+<li class="fragment">The reduced form VAR(0) (what we can observe and estimate) is <span class="math inline">\(y_{t} = A^{-1}u_{t} = \eta_{t}\)</span> with <span class="math inline">\(E[\eta_{t}\eta_{t}^{T}]= \Sigma =  A^{-1}(A^{-1})^{T} = (A^{T}A)^{-1}\)</span></li>
+<li class="fragment"><span class="math inline">\(\phi = \Sigma\)</span> is the reduced form parameter that we can observe. <span class="math inline">\(\theta = A\)</span> is the parameter that we are really interested in.</li>
+<li class="fragment">Note that <span class="math inline">\(\forall Q \in \mathcal{O}(2)\)</span>, we have that <span class="math inline">\(\Sigma = (A^{T}QQ^{T}A)^{-1}\)</span>, the identified set is <span class="math inline">\(IS_{A}(\Sigma) = \{A | (A^{T}QQ^{T}A)^{-1} = \Sigma\}\)</span>.</li>
+</ul>
+</section>
+<section id="the-problem-with-set-identified-models" class="slide level2 smaller">
+<h2>The problem with set identified models</h2>
+<p><span class="math display">\[
+P(\theta | Y) =\frac{P(Y | \theta) P(\theta)}{P(Y)}
+\]</span></p>
+<ul>
+<li class="fragment"><p>Let <span class="math inline">\(\phi \in \Phi, Y \in \mathbf{Y}\)</span>, we have <span class="math inline">\(\forall \theta_{0} \in IS_{\theta}(\phi)\)</span> we have</p>
+<ul>
+<li class="fragment"><span class="math inline">\(\theta_{0} \perp Y | \phi\)</span>.</li>
+</ul></li>
+<li class="fragment"><p>Therefore we can write the posterior <span class="math inline">\(p(\theta|Y)\)</span> as <span class="math inline">\(p(\theta|Y) = \int_{\Phi}p(\theta|\phi)dp(\phi|Y)\)</span>.</p></li>
+<li class="fragment"><p><span class="math inline">\(p(\phi |Y)\)</span> is updated as data comes in, <span class="math inline">\(p(\theta | \phi)\)</span> is not.</p></li>
+<li class="fragment"><p>Usually a Bayesian only chooses <span class="math inline">\(p(\theta)\)</span>. Alternatively they could set <span class="math inline">\(p(\phi)\)</span>, but then they also need to set <span class="math inline">\(p(\theta | \phi)\)</span> but a good one is often not available. Or a Bayesian can set restrictions to identify the model.</p></li>
+<li class="fragment"><p>Bypassing this problem is the main contribution of this paper.</p></li>
+<li class="fragment"><p>Note that any valid conditional prior must satisfy <span class="math inline">\(\int_{IS_{\theta}(\phi)}dp(\theta |\phi) = 1, dp(\phi)\text{-a.s.}\)</span></p></li>
 </ul>
 <aside class="notes">
-<p><span class="math inline">\(\Phi\)</span> is just the set of reduced form parameters. Note that g partitons <span class="math inline">\(\Theta\)</span> into equivalence classes and the set of identified sets is the partition induced by <span class="math inline">\(g\)</span>. The decomposition of the prior into reduced form and structural given reduced form priors is what creates the flat region. Technically the above image is not correct as we can put any kind of prior on the flat region.</p>
+<p><span class="math inline">\(\Phi\)</span> is just the set of reduced form parameters. Note that g partitons <span class="math inline">\(\Theta\)</span> into equivalence classes and the set of identified sets is the partition induced by <span class="math inline">\(g\)</span>. The decomposition of the prior into reduced form and structural given reduced form priors is what creates the flat region.</p>
 <style type="text/css">
         span.MJX_Assistive_MathML {
           position:absolute!important;
@@ -436,38 +491,55 @@ P(\text{Hypothesis} | \text{Data}) =\frac{P(\text{Data} | \text{Hypothesis}) P(\
 
 <h3 id="set-identified-example">Set identified example</h3>
 
-<img data-src="index_files/figure-revealjs/unnamed-chunk-3-1.png" width="960" class="r-stretch"></section>
-<section class="slide level2">
-
-<h3 id="possible-unrevisable-priors-on-the-identified-sets">Possible unrevisable priors on the identified sets</h3>
-<div class="columns">
-<div class="column" style="width:50%;">
-<div class="cell">
-<div class="cell-output-display">
-<div>
-<figure>
-<p><img data-src="index_files/figure-revealjs/unnamed-chunk-5-1.png" width="960"></p>
-</figure>
-</div>
-</div>
-</div>
-</div><div class="column" style="width:50%;">
-<div class="cell">
-<div class="cell-output-display">
-<div>
-<figure>
-<p><img data-src="index_files/figure-revealjs/unnamed-chunk-6-1.png" width="960"></p>
-</figure>
-</div>
-</div>
-</div>
-</div>
-</div>
+<img data-src="index_files/figure-revealjs/unnamed-chunk-4-1.png" width="960" class="r-stretch"><p><span class="math inline">\(p(\theta|Y) = \int_{\Phi}p(\theta|\phi)dp(\phi|Y)\)</span></p>
+</section>
+<section id="unrevisable-priors-in-the-case-of-a-svar0" class="slide level2 smaller">
+<h2>Unrevisable priors in the case of a SVAR(0)</h2>
+<ul>
+<li class="fragment">Remember the reduced for SVAR(0) <span class="math display">\[
+y_{t} = A^{-1}u_{t}    = \eta_{t} \quad E[\eta_{t}\eta_{t}^{T}]= \Sigma = (A^{T}QQ^{T}A)^{-1}  \forall Q \in \mathcal{O}(2)
+\]</span></li>
+<li class="fragment">Given <span class="math inline">\(A^{-1} = \begin{pmatrix}a_{00} &amp; a_{01} \\ a_{10} &amp; a_{11}\end{pmatrix}\)</span>, then any matrix that satisfies <span class="math inline">\(A^{-1}(A^{-1})^{T} = \Sigma\)</span> is consistent with any reasonable prior.</li>
+<li class="fragment">Normalising <span class="math inline">\(det(A^{-1}) = 1\)</span>, we get that solution to the following system is consistent with any reasonable prior <span class="math display">\[
+\begin{cases}
+a_{11}^{2} + a_{01}^{2} = \sigma_{00}\\
+a_{10}^{2} + a^{2}_{00} = \sigma_{11}\\
+a_{10}a_{11} + a_{01}a_{00} = -\sigma_{12}
+\end{cases}
+\]</span></li>
+<li class="fragment">We can set a prior on <span class="math inline">\(A\)</span> or <span class="math inline">\(Q\)</span> as they’re equivalent. Or a prior on <span class="math inline">\(\Sigma\)</span> and then <span class="math inline">\(A|\Sigma\)</span>.</li>
+</ul>
+<aside class="notes">
+<p>We have three equations for four unkwowns. So we are going to get a hyperplane in four dimensions that is identified. If we naively set a prior, that e.g.&nbsp;<span class="math inline">\(a_{01}\)</span> is really big. Then we favour settings where where the hyperplane has a certain rotation. Setting a prior on the rotation though is setting a prior on the identified set itself. Hence we are slightly cheating. We are choosing <span class="math inline">\(\pi_{\theta |\phi}\)</span>. Choosing <span class="math inline">\(\pi_{\phi |Y}\)</span> is choosing the likely position of the hyperplane and coosing <span class="math inline">\(\pi_{\thet |Y}\)</span> is choosing a point in four dimensional space (that the identified variables can be rotated to fit?).</p>
+<p>The simplest form of prior trimming would be to assume that one of the variables are positive. This will limit us to a smaller set of rotations. But we are still only set identified. We also have to trim the priors to integrate to one on the identified set.</p>
+<p>It is difficult to visualise since we are already working in a four dimensional space, but we need a fifth dimension to visualise priors</p>
+<style type="text/css">
+        span.MJX_Assistive_MathML {
+          position:absolute!important;
+          clip: rect(1px, 1px, 1px, 1px);
+          padding: 1px 0 0 0!important;
+          border: 0!important;
+          height: 1px!important;
+          width: 1px!important;
+          overflow: hidden!important;
+          display:block!important;
+      }</style></aside>
+</section>
+<section id="the-solution-what-we-want" class="slide level2 smaller">
+<h2>The solution: What we want</h2>
+<p><span class="math display">\[
+P(\theta | Y) =\frac{P(Y | \theta) P(\theta)}{P(Y)}
+\]</span></p>
+<ul>
+<li class="fragment">As discussed the problem in the case of set identified models is that <span class="math inline">\(P(Y|\theta)\)</span> is flat, so <span class="math inline">\(P(\theta)\)</span> determines the posterior.</li>
+<li class="fragment">We want to make statements that are robust to any choice of prior. E.g. no matter the prior the posterior is at least that big.</li>
+<li class="fragment">For this consider <span class="math inline">\(\Pi(\theta |\phi) = \{p(\theta|\phi) |\int_{IS_{\theta}(\phi)}dp(\theta|\phi) = 1 \} = \{\pi_{\theta|\phi} |\pi_{\theta|\phi}(IS_{\theta}(\phi)) = 1,\pi_{\phi}-a.s. \}\)</span></li>
+</ul>
 </section>
 <section id="the-solution-posterior-upper-and-lower-probabilities-theorem-1" class="slide level2 smaller">
 <h2>The solution: Posterior upper and lower probabilities (Theorem 1)</h2>
 <ul>
-<li class="fragment">We can define <span class="math inline">\(\Pi_{\theta | Y} = \{\pi_{\theta|Y} = \int_{\Phi}\pi_{\theta|\phi}d\pi_{\phi |Y}\}\)</span></li>
+<li class="fragment">We can define <span class="math inline">\(\Pi_{\theta | Y} = \{\pi_{\theta|Y}(\cdot) = \int_{\Phi}\pi_{\theta|\phi}(\cdot)d\pi_{\phi |Y}|\pi_{\theta|\phi} \in \Pi(\theta|\phi)\}\)</span></li>
 <li class="fragment">For any set <span class="math inline">\(D\)</span> we can define the posterior lower probability as <span class="math display">\[
 \underline{\pi}_{\theta|Y}(D) = \inf_{\pi_{\theta |Y} \in \Pi_{\theta|Y}} \pi_{\theta|Y}(D) = \pi_{\phi|Y}(\{\phi | IS_{\theta}(\phi) \subset D\})
 \]</span></li>
@@ -475,12 +547,13 @@ P(\text{Hypothesis} | \text{Data}) =\frac{P(\text{Data} | \text{Hypothesis}) P(\
 \overline{\pi}_{\theta|Y}(D) = \sup_{\pi_{\theta |Y} \in \Pi_{\theta|Y}} \pi_{\theta|Y}(D) = \pi_{\phi|Y}(\{\phi | IS_{\theta}(\phi) \cap D \neq \emptyset\})
 \]</span></li>
 <li class="fragment">Note these hold for any <span class="math inline">\(D\)</span>. In general the worst and best case scenario depend on the set <span class="math inline">\(D\)</span></li>
-<li class="fragment"><span class="math inline">\(\underline{\pi}_{\theta|Y}\)</span> is the lowest possible posterior probability assigned the event <span class="math inline">\(\{\theta \in D\}\)</span> no matter which prior is chosen by the researcher</li>
+<li class="fragment"><span class="math inline">\(\underline{\pi}_{\theta|Y}\)</span> is the lowest possible posterior probability assigned the event <span class="math inline">\(\{\theta \in D\}\)</span> no matter which prior is chosen by the researcher. Choice is over <span class="math inline">\(\pi_{\theta|\phi}\)</span></li>
 </ul>
 <aside class="notes">
+<p>Note that we are basically choosing over the conditional priors.</p>
 <p>The assumptions that go into this theorem are basically that the probability distributions are well defined and that the maps are lower semi-continuous.</p>
 <p>Also it’s important to mention that here we are entering the world of set valued random variables. The identified set is seen as a random realisation of the data generating process.</p>
-<p>Futhermore the second equalities are important as we can observe the reduced form parameter and therefore approximate these probabilities by calculation.</p>
+<p>Furthermore the second equalities are important as we can observe the reduced form parameter and therefore approximate these probabilities by calculation.</p>
 <style type="text/css">
         span.MJX_Assistive_MathML {
           position:absolute!important;
@@ -497,30 +570,75 @@ P(\text{Hypothesis} | \text{Data}) =\frac{P(\text{Data} | \text{Hypothesis}) P(\
 
 <h3 id="some-intuition-for-the-lower-probabilities">Some intuition for the lower probabilities</h3>
 
-<img data-src="index_files/figure-revealjs/unnamed-chunk-7-1.png" width="960" class="r-stretch"></section>
+<img data-src="index_files/figure-revealjs/unnamed-chunk-5-1.png" width="960" class="r-stretch"><p><span class="math inline">\(\inf_{\pi_{\theta |Y} \in \Pi_{\theta|Y}} \pi_{\theta|Y}(D) = \pi_{\phi|Y}(\{\phi | IS_{\theta}(\phi) \subset D\})\)</span>, choice over <span class="math inline">\(\pi_{\theta|\phi}\)</span></p>
+</section>
 <section class="slide level2">
 
+<h3 id="some-intuition-for-the-lower-probabilities-1">Some intuition for the lower probabilities</h3>
 
-<img data-src="index_files/figure-revealjs/unnamed-chunk-8-1.png" width="960" class="r-stretch"></section>
+<img data-src="index_files/figure-revealjs/unnamed-chunk-6-1.png" width="960" class="r-stretch"><p><span class="math inline">\(\inf_{\pi_{\theta |Y} \in \Pi_{\theta|Y}} \pi_{\theta|Y}(D) = \pi_{\phi|Y}(\{\phi | IS_{\theta}(\phi) \subset D\})\)</span>, choice over <span class="math inline">\(\pi_{\theta|\phi}\)</span></p>
+</section>
 <section class="slide level2">
 
+<h3 id="some-intuition-for-the-lower-probabilities-2">Some intuition for the lower probabilities</h3>
 
-<img data-src="index_files/figure-revealjs/unnamed-chunk-9-1.png" width="960" class="r-stretch"></section>
+<img data-src="index_files/figure-revealjs/unnamed-chunk-7-1.png" width="960" class="r-stretch"><p><span class="math inline">\(\inf_{\pi_{\theta |Y} \in \Pi_{\theta|Y}} \pi_{\theta|Y}(D) = \pi_{\phi|Y}(\{\phi | IS_{\theta}(\phi) \subset D\})\)</span>, choice over <span class="math inline">\(\pi_{\theta|\phi}\)</span></p>
+</section>
+<section id="quick-summary-of-what-we-just-looked-at" class="slide level2 smaller">
+<h2>Quick summary of what we just looked at</h2>
+<p><span class="math display">\[
+P(\theta | Y) =\frac{P(Y | \theta) P(\theta)}{P(Y)}
+\]</span></p>
+<ul>
+<li class="fragment"><p>Issue: The frequentist properties of Bayesian methods in set identified models are bad</p></li>
+<li class="fragment"><p>Reason: In set identified models, the likelihood is flat on the identified set,therefore the prior not the data determines the posterior shape.</p></li>
+<li class="fragment"><p>Solution: For any hypothesis about where your parameters lie, consider the worst case scenario</p></li>
+<li class="fragment"><p>Remaining practical issue: Reporting probability distributions for all possible hypotheses about parameters is a bit difficult.</p></li>
+</ul>
+<aside class="notes">
+<p>In set identified models since we only observe reduced form parameter, this identifies a set of underlying parameters. The data does not allow us to distinguish between any two underlying parameters, so the posterior on the identified set is only a function of the prior.</p>
+<p>As a solution we can consider any form of conditional prior that translates beliefs about the reduced form parameters to beliefs about the underlying parameter. For any hypothesis about the parameters, we can calculate the worst case scenario.</p>
+<style type="text/css">
+        span.MJX_Assistive_MathML {
+          position:absolute!important;
+          clip: rect(1px, 1px, 1px, 1px);
+          padding: 1px 0 0 0!important;
+          border: 0!important;
+          height: 1px!important;
+          width: 1px!important;
+          overflow: hidden!important;
+          display:block!important;
+      }</style></aside>
+</section>
 <section id="summarising-information-the-set-of-posterior-means" class="slide level2 smaller">
 <h2>Summarising information: The set of posterior means</h2>
 <ul>
 <li class="fragment">Theorem 1 gives us lower and upper probabilities for an arbitrary event <span class="math inline">\(D\)</span>, next step is to summarise the information in the class of posteriors without specifying <span class="math inline">\(D\)</span>.</li>
 <li class="fragment">The paper proposes the set of posterior means <span class="math inline">\(\{E_{\theta | Y}(\theta) | \pi_{\theta | Y} \in \Pi_{\theta | Y}\}\)</span>.</li>
-<li class="fragment">Theorem 2: Under measurability conditions and <span class="math inline">\(E_{\phi | Y}[\sup_{\theta \in IS_{\theta}(\phi)}||\theta||] &lt; \infty\)</span>, given that <span class="math inline">\(co(IS_{\theta}(\phi))\)</span> is the convex hull of <span class="math inline">\(IS_{\theta}(\phi)\)</span> and <span class="math inline">\(E^{A}_{\phi|Y}\)</span> is the aumann expectation with probability measure <span class="math inline">\(\phi_{\phi |Y}\)</span> we have <span class="math display">\[
+<li class="fragment">Theorem 2: Under measurability conditions and <span class="math inline">\(E_{\phi | Y}[\sup_{\theta \in IS_{\theta}(\phi)}||\theta||] &lt; \infty\)</span>, given that <span class="math inline">\(co(IS_{\theta}(\phi))\)</span> is the convex hull of <span class="math inline">\(IS_{\theta}(\phi)\)</span> and <span class="math inline">\(E^{A}_{\phi|Y}\)</span> is the Aumann expectation with probability measure <span class="math inline">\(\phi_{\phi |Y}\)</span> we have <span class="math display">\[
 \{E_{\theta | Y}(\theta) | \pi_{\theta | Y} \in \Pi_{\theta | Y}\} = E^{A}_{\phi|Y}[co(IS_{\theta}(\phi))]
 \]</span></li>
+<li class="fragment">This gets us closer to being able to calculate something.</li>
 </ul>
+<aside class="notes">
+<p>The set of posterior means is all the possible values for the posterior average value for different conditional probabilities. Why do we care about this? Because we are working towards being able to calculate something.</p>
+<style type="text/css">
+        span.MJX_Assistive_MathML {
+          position:absolute!important;
+          clip: rect(1px, 1px, 1px, 1px);
+          padding: 1px 0 0 0!important;
+          border: 0!important;
+          height: 1px!important;
+          width: 1px!important;
+          overflow: hidden!important;
+          display:block!important;
+      }</style></aside>
 </section>
 <section id="what-is-the-aumann-expectation-and-what-is-the-expectation-of-a-random-set" class="slide level2 smaller">
 <h2>What is the Aumann expectation and what is the expectation of a random set?</h2>
 <ul>
-<li class="fragment"><p>To prove all the results in the paper they use random set theory, where instead of having a single outcome, you have a set of outcomes of your random variable.</p></li>
-<li class="fragment"><p>Definition: For a random correspondence <span class="math inline">\(\mathcal{X}\)</span>, <span class="math inline">\(E^{A}[\mathcal{X}] = \{E(f) | f \text{ is a measurable selection of }F\}\)</span></p></li>
+<li class="fragment"><p>To prove all the results in the paper they use random set theory, where instead of having a single outcome, you have a set of outcomes for your random variable.</p></li>
+<li class="fragment"><p>Definition: For a random correspondence <span class="math inline">\(\mathcal{X}\)</span>, <span class="math inline">\(E^{A}[\mathcal{X}] = \{E(f) | f \text{ is a measurable selection of }\mathcal{X}\}\)</span></p></li>
 <li class="fragment"><p>Consider <span class="math inline">\(\mathcal{X} : \{1,2\} \to \mathcal{P}(\{1,2,3\}), 1 \mapsto \{1,2\}, 2 \mapsto \{2,3\}\)</span> <span class="math display">\[
 \begin{cases}
   f_{1}(1) = 1, f_{1}(2) = 2\\
@@ -534,6 +652,7 @@ P(\text{Hypothesis} | \text{Data}) =\frac{P(\text{Data} | \text{Hypothesis}) P(\
 <section id="a-little-note-on-support-functions" class="slide level2 smaller">
 <h2>A little note on support functions</h2>
 <ul>
+<li class="fragment">Useful for higher dimensional intuition.</li>
 <li class="fragment">Definition: Let <span class="math inline">\(A \subseteq \mathbb{R}^{n}\)</span>, then the support function of <span class="math inline">\(A\)</span> is <span class="math inline">\(\sigma_{A} : \mathbb{R}^{n} \to \mathbb{R} \cup \{+\infty\}\)</span> defined by <span class="math display">\[
 \sigma_A(v) = \sup_{x \in A}\langle q,x \rangle
 \]</span></li>
@@ -550,12 +669,13 @@ P(\text{Hypothesis} | \text{Data}) =\frac{P(\text{Data} | \text{Hypothesis}) P(\
 <ul>
 <li class="fragment">Consider 1D case <span class="math inline">\(\Theta \subseteq \mathbb{R}\)</span> then <span class="math display">\[
 \begin{align*}
-&amp;E^{A}_{\phi |Y}[co(IS_{\theta}(\phi))] = \left[E^{A}_{\phi |Y}[l(\phi)], E^{A}_{\phi |Y}[u(\phi)]\right]\\
+&amp; \{E_{\theta | Y}(\theta) | \pi_{\theta | Y} \in \Pi_{\theta | Y}\} = E^{A}_{\phi |Y}[co(IS_{\theta}(\phi))] = \left[E_{\phi |Y}[l(\phi)], E_{\phi |Y}[u(\phi)]\right]\\
 &amp;l(\phi) = \inf\{\theta | \theta \in IS_{\theta}(\phi)\}, \quad u(\phi) = \sup\{\theta | \theta \in IS_{\theta}(\phi)\}
 \end{align*}
 \]</span></li>
 <li class="fragment">In a more general setting for for <span class="math inline">\(A  := IS_{\theta}(\phi)\)</span> given <span class="math inline">\(\sigma_{A}(q) :\mathbb{R}^{n} \to \mathbb{R} \cup \{+\infty\}\)</span>, we have <span class="math inline">\(\sigma_{E^{A}_{\phi|Y}[co(IS_{\theta}(\phi))]} = E_{\phi |Y}[\sigma_{IS_{\theta}(\phi)}]\)</span></li>
-<li class="fragment">Note <span class="math inline">\(\sigma_{[a,b]}(v) = \begin{cases} bv \text{ if } v &gt;0\\ av \text{ if } v&lt;0 \\ 0 \text{ if } v = 0\end{cases}\)</span></li>
+<li class="fragment">Importantly <span class="math inline">\(E_{\phi |Y}[\sigma_{IS_{\theta}(\phi)}]\)</span> can be calculated using Monte Carlo.</li>
+<li class="fragment">Note <span class="math inline">\(\sigma_{[a,b]}(v) = \begin{cases} bv \text{ if } v &gt;0\\ av \text{ if } v&lt;0 \\ 0 \text{ if } v = 0\end{cases}\)</span> and <span class="math inline">\(IS_{\theta}(\phi) = [l(\phi), u(\phi)]\)</span></li>
 <li class="fragment">Q: Is the true parameter always going to be in this set?</li>
 </ul>
 <aside class="notes">
@@ -575,11 +695,11 @@ P(\text{Hypothesis} | \text{Data}) =\frac{P(\text{Data} | \text{Hypothesis}) P(\
 <section id="robust-credible-regions" class="slide level2 smaller">
 <h2>Robust credible regions</h2>
 <ul>
-<li class="fragment">The motivation for this paper was that Frequentists and Bayesians used to disagree on inference in set identified models</li>
+<li class="fragment">The motivation for this paper was that Frequentists and Bayesians used to disagree on inference in set identified models.</li>
 <li class="fragment">From a frequentist perspective the Bayesian 95% credible region coincides with the Frequentist 95% confidence interval. I.e. they contain the true parameter 95% of the time.</li>
-<li class="fragment">In set identification, the Bayesian credible region concentrates <em>strictly within</em> the identified set (see Moon and Schorfheide 2012) and thus contains the true parameter all of the time for some parameters or never for other parameter values in for example the sign identified case.</li>
+<li class="fragment">In set identification, the Bayesian credible region concentrates <em>strictly within</em> the identified set (see Moon and Schorfheide 2012) and thus contains the true parameter all of the time for some parameters or never for other parameter values.</li>
 <li class="fragment">The solution: Robust credible intervals i.e.&nbsp;“The sets where the posterior credibility of <span class="math inline">\(\theta\)</span> is at least <span class="math inline">\(\alpha\)</span> no matter the posterior” <span class="math inline">\(C_{\alpha}\)</span> s.t. <span class="math display">\[
-\underline{\pi}_{\theta | Y}(C_{\alpha}) = \pi_{\phi|Y}(\{\phi | IS_{\theta}(\phi) \subset D\}) \geq \alpha
+\underline{\pi}_{\theta | Y}(C_{\alpha}) = \pi_{\phi|Y}(\{\phi | IS_{\theta}(\phi) \subset C_{\alpha}\}) \geq \alpha
 \]</span></li>
 </ul>
 </section>
@@ -661,7 +781,7 @@ P(\text{Hypothesis} | \text{Data}) =\frac{P(\text{Data} | \text{Hypothesis}) P(\
 <section id="an-example-of-a-possible-violation" class="slide level2">
 <h2>An example of a possible violation</h2>
 
-<img data-src="index_files/figure-revealjs/unnamed-chunk-10-1.png" width="960" class="r-stretch"></section>
+<img data-src="index_files/figure-revealjs/unnamed-chunk-8-1.png" width="960" class="r-stretch"></section>
 <section class="slide level2">
 
 <h3 id="coverage-of-robust-credible-region-2">Coverage of robust credible region 2</h3>
@@ -671,14 +791,21 @@ P(\text{Hypothesis} | \text{Data}) =\frac{P(\text{Data} | \text{Hypothesis}) P(\
 \]</span></li>
 <li class="fragment">And give that <span class="math inline">\(C_{\alpha}\)</span> satisfies <span class="math inline">\(\pi_{\phi | Y^{T}}(IS_{\theta}(\phi) \subset C_{\alpha}) = \alpha\)</span> then <span class="math display">\[
 \lim_{T \to \infty} P_{Y^{T}|\phi_{0}}(IS_{\theta}(\phi) \subset C_{\alpha}) = \alpha
-\]</span> ::: {.notes} The second bit shows that if you construct the credible interval to satisfy the bound with equality then asymptotically the bound will also be satisfied with equality. :::</li>
+\]</span></li>
 </ul>
-</section>
-<section id="diagnostic-tools" class="slide level2">
-<h2>Diagnostic tools</h2>
-</section>
-<section id="an-ar0-example-if-we-have-time" class="slide level2">
-<h2>An AR(0) example, if we have time</h2>
+<aside class="notes">
+<p>The second bit shows that if you construct the credible interval to satisfy the bound with equality then asymptotically the bound will also be satisfied with equality.</p>
+<style type="text/css">
+        span.MJX_Assistive_MathML {
+          position:absolute!important;
+          clip: rect(1px, 1px, 1px, 1px);
+          padding: 1px 0 0 0!important;
+          border: 0!important;
+          height: 1px!important;
+          width: 1px!important;
+          overflow: hidden!important;
+          display:block!important;
+      }</style></aside>
 </section>
 <section class="slide level2">
 
@@ -691,16 +818,43 @@ P(\text{Hypothesis} | \text{Data}) =\frac{P(\text{Data} | \text{Hypothesis}) P(\
 <p>MAA 307: Convex optimization and optimal control. Samuel Amstutz. CMAP and Department of Applied Mathematics. Ecole polytechnique</p>
 <p>Moon, Hyungsik Roger, and Frank Schorfheide. “Bayesian and frequentist inference in partially identified models.” Econometrica 80.2 (2012): 755-782.</p>
 </section>
+<section id="graveyard" class="slide level2">
+<h2>Graveyard</h2>
+<h3 id="possible-unrevisable-priors-on-the-identified-sets">Possible unrevisable priors on the identified sets</h3>
+<div class="columns">
+<div class="column" style="width:50%;">
+<div class="cell">
+<div class="cell-output-display">
+<div>
+<figure>
+<p><img data-src="index_files/figure-revealjs/unnamed-chunk-10-1.png" width="960"></p>
+</figure>
+</div>
+</div>
+</div>
+</div><div class="column" style="width:50%;">
+<div class="cell">
+<div class="cell-output-display">
+<div>
+<figure>
+<p><img data-src="index_files/figure-revealjs/unnamed-chunk-11-1.png" width="960"></p>
+</figure>
+</div>
+</div>
+</div>
+</div>
+</div>
+</section>
 <section id="a-running-example" class="slide level2">
 <h2>A running example</h2>
 <ul>
-<li class="fragment">As a running example I will be using an SVAR(0) of the form <span class="math display">\[Ay_{t} = \epsilon_{t}, \quad y_{t}, \epsilon_{t} \in \mathbb{R}^{2}, A \in \mathcal{M}(2,2)\]</span></li>
-<li class="fragment">The reduced form VAR(0) is <span class="math inline">\(y_{t} = A^{-1}\epsilon_{t} = \eta_{t}\)</span> with <span class="math inline">\(E[\eta_{t}\eta_{t}^{T}]= \Sigma =  A^{-1}(A^{-1})^{T} = (A^{T}A)^{-1}\)</span></li>
-<li class="fragment">Note that <span class="math inline">\(\forall Q \in \mathcal{O}(2)\)</span>, we have that <span class="math inline">\(\Sigma = (A^{T}QQ^{T}A)^{-1}\)</span>, the model is set identified</li>
+<li class="fragment"><p>But Any rotation <span class="math inline">\(\begin{pmatrix}\cos(\theta) &amp; -\sin(\theta) \\ \sin(\theta) &amp; \cos(\theta)end{pmatrix}\)</span> we have that <span class="math inline">\(\begin{pmatrix}\sqrt{\sigma_{11}}\cos(\theta) &amp; -\sin(\theta)\sqrt{\sigma_{11}}\\ -\frac{\sigma_{01}}{\sqrt{11}}\cos(\theta) + \sqrt{\sigma_{00}}\sin(\theta) &amp; -\frac{\sigma_{01}}{\sqrt{11}}(-\sin(\theta)) + \sqrt{\sigma_{00}}\cos(\theta)\end{pmatrix}\)</span> is also valid.</p></li>
+<li class="fragment"><p>As a running example I will be using an SVAR(0) of the form <span class="math display">\[Ay_{t} = \epsilon_{t}, \quad y_{t}, \epsilon_{t} \in \mathbb{R}^{2}, A \in \mathcal{M}(2,2)\]</span></p></li>
+<li class="fragment"><p>The reduced form VAR(0) is <span class="math inline">\(y_{t} = A^{-1}\epsilon_{t} = \eta_{t}\)</span> with <span class="math inline">\(E[\eta_{t}\eta_{t}^{T}]= \Sigma =  A^{-1}(A^{-1})^{T} = (A^{T}A)^{-1}\)</span></p></li>
+<li class="fragment"><p>Note that <span class="math inline">\(\forall Q \in \mathcal{O}(2)\)</span>, we have that <span class="math inline">\(\Sigma = (A^{T}QQ^{T}A)^{-1}\)</span>, the model is set identified</p></li>
 </ul>
 
-
-<img data-src="index_files/figure-revealjs/unnamed-chunk-11-1.png" width="960" class="r-stretch"><div class="quarto-auto-generated-content">
+<div class="quarto-auto-generated-content">
 <div class="footer footer-default">
 
 </div>
@@ -1070,7 +1224,7 @@ P(\text{Hypothesis} | \text{Data}) =\frac{P(\text{Data} | \text{Hypothesis}) P(\
       });
         var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
         var mailtoRegex = new RegExp(/^mailto:/);
-          var filterRegex = new RegExp("https:\/\/Riho-M-Pallum\.github\.io\/");
+          var filterRegex = new RegExp('/' + window.location.host + '/');
         var isInternal = (href) => {
             return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
         }
