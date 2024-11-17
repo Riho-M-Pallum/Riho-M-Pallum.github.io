@@ -25,7 +25,7 @@
     "href": "index.html#set-identification",
     "title": "ROBUST BAYESIAN INFERENCE FOR SET-IDENTIFIED MODELS",
     "section": "Set identification",
-    "text": "Set identification\n\\[\nP(\\theta | Y) =\\frac{P(Y | \\theta) P(\\theta)}{P(Y)}\n\\]\n\nA parameter \\(\\theta \\in \\Theta\\) is said to be point identified if \\(\\forall \\theta^{'} \\neq \\theta \\quad p(y | \\theta) &gt; p(y | \\theta^{'}) ~ \\forall y \\in Y\\)\nSet identification is the negation of this \\(\\exists \\theta_{0}, \\theta_{1} \\in \\Theta ~ s.t. \\theta_{0} \\neq \\theta_{1},\\quad p(y | \\theta_{0}) = p(y | \\theta_{1}) ~ \\forall y \\in Y\\)\nSet identification: For any draw of the data the likelihoods must be equal.\nImplication: Posterior depends solely on the prior.\n\n\nQ: but can we not just get rid of the flat region since we choose the prior? A: Yes and we will discuss that in the next slide"
+    "text": "Set identification\n\\[\nP(\\theta | Y) =\\frac{P(Y | \\theta) P(\\theta)}{P(Y)}\n\\]\n\nA parameter \\(\\theta \\in \\Theta\\) is said to be point identified if \\(\\forall \\theta^{'} \\neq \\theta \\quad p(Y | \\theta) &gt; p(Y | \\theta^{'}) ~ \\forall Y \\in  \\mathbf{Y}\\)\nSet identification is the negation of this \\(\\exists \\theta_{0}, \\theta_{1} \\in \\Theta ~ s.t. \\theta_{0} \\neq \\theta_{1},\\quad p(y | \\theta_{0}) = p(Y | \\theta_{1}) ~ \\forall Y \\in \\mathbf{Y}\\)\nSet identification: For any draw of the data the likelihoods must be equal.\nImplication: Posterior depends solely on the prior.\n\n\nQ: but can we not just get rid of the flat region since we choose the prior? A: Yes and we will discuss that in the next slide"
   },
   {
     "objectID": "index.html#introduction-to-notation",
