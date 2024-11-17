@@ -779,9 +779,22 @@ P(\theta | Y) =\frac{P(Y | \theta) P(\theta)}{P(Y)}
 <li class="fragment"><p>And give that <span class="math inline">\(C_{\alpha}\)</span> satisfies <span class="math inline">\(\pi_{\phi | Y^{T}}(IS_{\theta}(\phi) \subset C_{\alpha}) = \alpha\)</span> then <span class="math display">\[
 \lim_{T \to \infty} P_{Y^{T}|\phi_{0}}(IS_{\theta}(\phi) \subset C_{\alpha}) = \alpha
 \]</span></p></li>
-<li class="fragment"><p>As far as I understand, if the differentiability of the support function does not hold, the probability of the identified set being in the confidence interval can be higher than <span class="math inline">\(\alpha\)</span> giving a overly confident confidence interval. ::: {.notes} The second bit shows that if you construct the credible interval to satisfy the bound with equality then asymptotically the bound will also be satisfied with equality.</p></li>
+<li class="fragment"><p>As far as I understand, if the differentiability of the support function does not hold, the probability of the identified set being in the confidence interval can be higher than <span class="math inline">\(\alpha\)</span> giving a overly confident confidence interval.</p></li>
 </ul>
-<p>Also when it goes wrong, :::</p>
+<aside class="notes">
+<p>The second bit shows that if you construct the credible interval to satisfy the bound with equality then asymptotically the bound will also be satisfied with equality.</p>
+<p>Also when it goes wrong,</p>
+<style type="text/css">
+        span.MJX_Assistive_MathML {
+          position:absolute!important;
+          clip: rect(1px, 1px, 1px, 1px);
+          padding: 1px 0 0 0!important;
+          border: 0!important;
+          height: 1px!important;
+          width: 1px!important;
+          overflow: hidden!important;
+          display:block!important;
+      }</style></aside>
 </section>
 <section class="slide level2">
 
@@ -790,7 +803,7 @@ P(\theta | Y) =\frac{P(Y | \theta) P(\theta)}{P(Y)}
 <section class="slide level2">
 
 <h3 id="sources">Sources</h3>
-<p>Li, S., Ogura, Y., Kreinovich, V. (2002). The Aumann Integral and the Conditional Expectation of a Set-Valued Random Variable. In: Limit Theorems and Applications of Set-Valued and Fuzzy Set-Valued Random Variables. Theory and Decision Library, vol 43. Springer, Dordrecht. https://doi.org/10.1007/978-94-015-9932-0_2 # Graveyard</p>
+<p>Li, S., Ogura, Y., Kreinovich, V. (2002). The Aumann Integral and the Conditional Expectation of a Set-Valued Random Variable. In: Limit Theorems and Applications of Set-Valued and Fuzzy Set-Valued Random Variables. Theory and Decision Library, vol 43. Springer, Dordrecht. https://doi.org/10.1007/978-94-015-9932-0_2</p>
 <p>MAA 307: Convex optimization and optimal control. Samuel Amstutz. CMAP and Department of Applied Mathematics. Ecole polytechnique</p>
 <p>Moon, Hyungsik Roger, and Frank Schorfheide. “Bayesian and frequentist inference in partially identified models.” Econometrica 80.2 (2012): 755-782.</p>
 </section>
@@ -1200,7 +1213,7 @@ P(\theta | Y) =\frac{P(Y | \theta) P(\theta)}{P(Y)}
       });
         var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
         var mailtoRegex = new RegExp(/^mailto:/);
-          var filterRegex = new RegExp('/' + window.location.host + '/');
+          var filterRegex = new RegExp("https:\/\/Riho-M-Pallum\.github\.io\/");
         var isInternal = (href) => {
             return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
         }

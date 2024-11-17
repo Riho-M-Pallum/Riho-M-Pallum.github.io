@@ -653,6 +653,7 @@ $$
 $$
 
 - As far as I understand, if the differentiability of the support function does not hold, the probability of the identified set being in the confidence interval can be higher than $\alpha$ giving a overly confident confidence interval.
+
 ::: {.notes}
 The second bit shows that if you construct the credible interval to satisfy the bound with equality then asymptotically the bound will also be satisfied with equality.
 

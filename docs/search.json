@@ -7,6 +7,13 @@
     "text": "Bayes rule\n\\(Y \\in \\mathbf{Y}\\) be a sample from the space of all samples, \\(\\theta \\in \\Theta\\) be a parameter from all possible parameter values \\[\nP(\\theta | Y) =\\frac{P(Y | \\theta) P(\\theta)}{P(Y)}\n\\]\n\nPrior: Belief about parameters before seeing the data, set by the researcher.\nLikelihood: The probability of observing the data given the parameters, the endpoint of frequentism.\nPosterior: Belief about parameters given the data, the point of Bayesian statistics.\nEvidence: (Usually unobserved) normalising constant."
   },
   {
+    "objectID": "index.html#inference-credible-intervals-vs-confidence-intervals.",
+    "href": "index.html#inference-credible-intervals-vs-confidence-intervals.",
+    "title": "ROBUST BAYESIAN INFERENCE FOR SET-IDENTIFIED MODELS",
+    "section": "Inference: credible intervals vs confidence intervals.",
+    "text": "Inference: credible intervals vs confidence intervals.\n\nFrequentist Interpretation\nA range of values that contain the true parameter value a certain amount of time over repeated experiments.\nBayesian Interpretation\nA range of values within which the true parameter lies with a certain probability, given the data and prior beliefs.\nDirect statement about the probability of the true parameter being within the interval. No need to think about repeated experiments."
+  },
+  {
     "objectID": "index.html#inference-credible-intervals",
     "href": "index.html#inference-credible-intervals",
     "title": "ROBUST BAYESIAN INFERENCE FOR SET-IDENTIFIED MODELS",
@@ -21,6 +28,13 @@
     "text": "Set identification\n\\[\nP(\\theta | Y) =\\frac{P(Y | \\theta) P(\\theta)}{P(Y)}\n\\]\n\nA parameter \\(\\theta \\in \\Theta\\) is said to be point identified if \\(\\forall \\theta^{'} \\neq \\theta \\quad p(y | \\theta) &gt; p(y | \\theta^{'}) ~ \\forall y \\in Y\\)\nSet identification is the negation of this \\(\\exists \\theta_{0}, \\theta_{1} \\in \\Theta ~ s.t. \\theta_{0} \\neq \\theta_{1},\\quad p(y | \\theta_{0}) = p(y | \\theta_{1}) ~ \\forall y \\in Y\\)\nSet identification: For any draw of the data the likelihoods must be equal.\nImplication: Posterior depends solely on the prior.\n\n\nQ: but can we not just get rid of the flat region since we choose the prior? A: Yes and we will discuss that in the next slide"
   },
   {
+    "objectID": "index.html#introduction-to-notation",
+    "href": "index.html#introduction-to-notation",
+    "title": "ROBUST BAYESIAN INFERENCE FOR SET-IDENTIFIED MODELS",
+    "section": "Introduction to notation",
+    "text": "Introduction to notation\n\\[\nP(\\theta | Y) =\\frac{P(Y | \\theta) P(\\theta)}{P(Y)}\n\\]\n\nLet \\(\\mathbf{Y} \\subseteq\\mathbb{R}^{d}\\) be the set of samples \\(Y\\) and \\(\\Theta\\subseteq\\mathbb{R}^{d}\\) be the set of possible parameter values \\(\\theta\\).\nSuppose we only observe a reduced form parameter \\(\\phi = g(\\theta)\\), where \\(g: \\Theta \\to \\Phi,\\quad g(\\theta) = g(\\theta^{'}) \\text{ iff }p(Y|\\theta) = p(Y|\\theta^{'}) \\forall Y\\in \\mathbf{Y}\\). Note in set identification \\(g\\) is not injective.\nDefine the identified set \\(IS_{\\theta}(\\phi) = \\{\\theta \\in \\Theta | g(\\theta) = \\phi\\} = g^{-1}(\\{\\phi\\})\\).\nNote that the identified sets constitute a partition of \\(\\Theta\\)."
+  },
+  {
     "objectID": "index.html#the-problem-with-set-identified-models",
     "href": "index.html#the-problem-with-set-identified-models",
     "title": "ROBUST BAYESIAN INFERENCE FOR SET-IDENTIFIED MODELS",
@@ -28,11 +42,32 @@
     "text": "The problem with set identified models\n\\[\nP(\\theta | Y) =\\frac{P(Y | \\theta) P(\\theta)}{P(Y)}\n\\]\n\nLet \\(\\phi \\in \\Phi, Y \\in \\mathbf{Y}\\), we have \\(\\forall \\theta_{0} \\in IS_{\\theta}(\\phi)\\) we have\n\n\\(\\theta_{0} \\perp Y | \\phi\\).\n\nTherefore we can write the posterior \\(p(\\theta|Y)\\) as \\(p(\\theta|Y) = \\int_{\\Phi}p(\\theta|\\phi)dp(\\phi|Y)\\).\n\\(p(\\phi |Y)\\) is updated as data comes in, \\(p(\\theta | \\phi)\\) is not.\nUsually a Bayesian only chooses \\(p(\\theta)\\). Alternatively they could set \\(p(\\phi)\\), but then they also need to set \\(p(\\theta | \\phi)\\) but a good one is often not available. Or a Bayesian can set restrictions to identify the model.\nBypassing this problem is the main contribution of this paper.\nNote that any valid conditional prior must satisfy \\(\\int_{IS_{\\theta}(\\phi)}dp(\\theta |\\phi) = 1, dp(\\phi)\\text{-a.s.}\\)\n\n\n\\(\\Phi\\) is just the set of reduced form parameters. Note that g partitons \\(\\Theta\\) into equivalence classes and the set of identified sets is the partition induced by \\(g\\). The decomposition of the prior into reduced form and structural given reduced form priors is what creates the flat region."
   },
   {
+    "objectID": "index.html#unrevisable-priors-in-the-case-of-a-svar0",
+    "href": "index.html#unrevisable-priors-in-the-case-of-a-svar0",
+    "title": "ROBUST BAYESIAN INFERENCE FOR SET-IDENTIFIED MODELS",
+    "section": "Unrevisable priors in the case of a SVAR(0)",
+    "text": "Unrevisable priors in the case of a SVAR(0)\n\nRemember the reduced for SVAR(0) \\[\ny_{t} = A^{-1}u_{t}    = \\eta_{t} \\quad E[\\eta_{t}\\eta_{t}^{T}]= \\Sigma = (A^{T}QQ^{T}A)^{-1}  \\forall Q \\in \\mathcal{O}(2)\n\\]\nGiven \\(A^{-1} = \\begin{pmatrix}a_{00} & a_{01} \\\\ a_{10} & a_{11}\\end{pmatrix}\\), then any matrix that satisfies \\(A^{-1}(A^{-1})^{T} = \\Sigma\\) is consistent with any reasonable prior.\nNormalising \\(det(A^{-1}) = 1\\), we get that solution to the following system is consistent with any reasonable prior \\[\n\\begin{cases}\na_{11}^{2} + a_{01}^{2} = \\sigma_{00}\\\\\na_{10}^{2} + a^{2}_{00} = \\sigma_{11}\\\\\na_{10}a_{11} + a_{01}a_{00} = -\\sigma_{12}\n\\end{cases}\n\\]\nWe can set a prior on \\(A\\) or \\(Q\\) as they’re equivalent. Or a prior on \\(\\Sigma\\) and then \\(A|\\Sigma\\).\n\n\nWe have three equations for four unkwowns. So we are going to get a hyperplane in four dimensions that is identified. If we naively set a prior, that e.g. \\(a_{01}\\) is really big. Then we favour settings where where the hyperplane has a certain rotation. Setting a prior on the rotation though is setting a prior on the identified set itself. Hence we are slightly cheating. We are choosing \\(\\pi_{\\theta |\\phi}\\). Choosing \\(\\pi_{\\phi |Y}\\) is choosing the likely position of the hyperplane and coosing \\(\\pi_{\\thet |Y}\\) is choosing a point in four dimensional space (that the identified variables can be rotated to fit?).\nThe simplest form of prior trimming would be to assume that one of the variables are positive. This will limit us to a smaller set of rotations. But we are still only set identified. We also have to trim the priors to integrate to one on the identified set.\nIt is difficult to visualise since we are already working in a four dimensional space, but we need a fifth dimension to visualise priors"
+  },
+  {
+    "objectID": "index.html#the-solution-what-we-want",
+    "href": "index.html#the-solution-what-we-want",
+    "title": "ROBUST BAYESIAN INFERENCE FOR SET-IDENTIFIED MODELS",
+    "section": "The solution: What we want",
+    "text": "The solution: What we want\n\\[\nP(\\theta | Y) =\\frac{P(Y | \\theta) P(\\theta)}{P(Y)}\n\\]\n\nAs discussed the problem in the case of set identified models is that \\(P(Y|\\theta)\\) is flat, so \\(P(\\theta)\\) determines the posterior.\nWe want to make statements that are robust to any choice of prior. E.g. no matter the prior the posterior is at least that big.\nFor this consider \\(\\Pi(\\theta |\\phi) = \\{p(\\theta|\\phi) |\\int_{IS_{\\theta}(\\phi)}dp(\\theta|\\phi) = 1 \\} = \\{\\pi_{\\theta|\\phi} |\\pi_{\\theta|\\phi}(IS_{\\theta}(\\phi)) = 1,\\pi_{\\phi}-a.s. \\}\\)"
+  },
+  {
     "objectID": "index.html#the-solution-posterior-upper-and-lower-probabilities-theorem-1",
     "href": "index.html#the-solution-posterior-upper-and-lower-probabilities-theorem-1",
     "title": "ROBUST BAYESIAN INFERENCE FOR SET-IDENTIFIED MODELS",
     "section": "The solution: Posterior upper and lower probabilities (Theorem 1)",
     "text": "The solution: Posterior upper and lower probabilities (Theorem 1)\n\nWe can define \\(\\Pi_{\\theta | Y} = \\{\\pi_{\\theta|Y}(\\cdot) = \\int_{\\Phi}\\pi_{\\theta|\\phi}(\\cdot)d\\pi_{\\phi |Y}|\\pi_{\\theta|\\phi} \\in \\Pi(\\theta|\\phi)\\}\\)\nFor any set \\(D\\) we can define the posterior lower probability as \\[\n\\underline{\\pi}_{\\theta|Y}(D) = \\inf_{\\pi_{\\theta |Y} \\in \\Pi_{\\theta|Y}} \\pi_{\\theta|Y}(D) = \\pi_{\\phi|Y}(\\{\\phi | IS_{\\theta}(\\phi) \\subset D\\})\n\\]\nand the posterior upper probability as \\[\n\\overline{\\pi}_{\\theta|Y}(D) = \\sup_{\\pi_{\\theta |Y} \\in \\Pi_{\\theta|Y}} \\pi_{\\theta|Y}(D) = \\pi_{\\phi|Y}(\\{\\phi | IS_{\\theta}(\\phi) \\cap D \\neq \\emptyset\\})\n\\]\nNote these hold for any \\(D\\). In general the worst and best case scenario depend on the set \\(D\\)\n\\(\\underline{\\pi}_{\\theta|Y}\\) is the lowest possible posterior probability assigned the event \\(\\{\\theta \\in D\\}\\) no matter which prior is chosen by the researcher. Choice is over \\(\\pi_{\\theta|\\phi}\\)\n\n\nNote that we are basically choosing over the conditional priors.\nThe assumptions that go into this theorem are basically that the probability distributions are well defined and that the maps are lower semi-continuous.\nAlso it’s important to mention that here we are entering the world of set valued random variables. The identified set is seen as a random realisation of the data generating process.\nFurthermore the second equalities are important as we can observe the reduced form parameter and therefore approximate these probabilities by calculation."
+  },
+  {
+    "objectID": "index.html#quick-summary-of-what-we-just-looked-at",
+    "href": "index.html#quick-summary-of-what-we-just-looked-at",
+    "title": "ROBUST BAYESIAN INFERENCE FOR SET-IDENTIFIED MODELS",
+    "section": "Quick summary of what we just looked at",
+    "text": "Quick summary of what we just looked at\n\\[\nP(\\theta | Y) =\\frac{P(Y | \\theta) P(\\theta)}{P(Y)}\n\\]\n\nIssue: The frequentist properties of Bayesian methods in set identified models are bad\nReason: In set identified models, the likelihood is flat on the identified set,therefore the prior not the data determines the posterior shape.\nSolution: For any hypothesis about where your parameters lie, consider the worst case scenario\nRemaining practical issue: Reporting probability distributions for all possible hypotheses about parameters is a bit difficult.\n\n\nIn set identified models since we only observe reduced form parameter, this identifies a set of underlying parameters. The data does not allow us to distinguish between any two underlying parameters, so the posterior on the identified set is only a function of the prior.\nAs a solution we can consider any form of conditional prior that translates beliefs about the reduced form parameters to beliefs about the underlying parameter. For any hypothesis about the parameters, we can calculate the worst case scenario."
   },
   {
     "objectID": "index.html#summarising-information-the-set-of-posterior-means",
@@ -98,18 +133,11 @@
     "text": "An example of a possible violation"
   },
   {
-    "objectID": "index.html#diagnostic-tools",
-    "href": "index.html#diagnostic-tools",
+    "objectID": "index.html#graveyard",
+    "href": "index.html#graveyard",
     "title": "ROBUST BAYESIAN INFERENCE FOR SET-IDENTIFIED MODELS",
-    "section": "Diagnostic tools",
-    "text": "Diagnostic tools"
-  },
-  {
-    "objectID": "index.html#an-ar0-example-if-we-have-time",
-    "href": "index.html#an-ar0-example-if-we-have-time",
-    "title": "ROBUST BAYESIAN INFERENCE FOR SET-IDENTIFIED MODELS",
-    "section": "An AR(0) example, if we have time",
-    "text": "An AR(0) example, if we have time"
+    "section": "Graveyard",
+    "text": "Graveyard\nPossible unrevisable priors on the identified sets"
   },
   {
     "objectID": "index.html#a-running-example",
@@ -123,7 +151,7 @@
     "href": "about.html#bayes-rule",
     "title": "Robust Bayesian Inference for Set-Identified Models",
     "section": "Bayes rule",
-    "text": "Bayes rule\n\\[\nP(\\text{Hypothesis} | \\text{Data}) =\\frac{P(\\text{Data} | \\text{Hypothesis}) P(\\text{Hypothesis})}{P(\\text{data})}\n\\] - Prior: Our Hyptothesis (= parameters) before seeing the data, set by the researcher\n\nLikelihood: The probability of observing the data given the Hypothesis, our “model”\nPosterior: Belief about the Hypothesis (= parameters) given the data, the point of Bayesian statistics\n\nEvidence: (Usually unobserved) normalising constant"
+    "text": "Bayes rule\n\\(Y \\in \\mathbf{Y}\\) be a sample from the space of all samples, \\(\\theta \\in \\Theta\\) be a parameter from all possible parameter values \\[\nP(\\theta | Y) =\\frac{P(Y | \\theta) P(\\theta)}{P(Y)}\n\\] - Prior: Belief about parameters before seeing the data, set by the researcher.\n\nLikelihood: The probability of observing the data given the parameters, the endpoint of frequentism.\nPosterior: Belief about parameters given the data, the point of Bayesian statistics.\nEvidence: (Usually unobserved) normalising constant."
   },
   {
     "objectID": "about.html#inference-credible-intervals",
@@ -236,47 +264,5 @@
     "title": "Robust Bayesian Inference for Set-Identified Models",
     "section": "A running example",
     "text": "A running example\n\nAs a running example I will be using an SVAR(0) of the form \\[Ay_{t} = \\epsilon_{t}, \\quad y_{t}, \\epsilon_{t} \\in \\mathbb{R}^{2}, A \\in \\mathcal{M}(2,2)\\]\nThe reduced form VAR(0) is \\(y_{t} = A^{-1}\\epsilon_{t} = \\eta_{t}\\) with \\(E[\\eta_{t}\\eta_{t}^{T}]= \\Sigma =  A^{-1}(A^{-1})^{T} = (A^{T}A)^{-1}\\)\nNote that \\(\\forall Q \\in \\mathcal{O}(2)\\), we have that \\(\\Sigma = (A^{T}QQ^{T}A)^{-1}\\), the model is set identified"
-  },
-  {
-    "objectID": "index.html#inference-credible-intervals-vs-confidence-intervals.",
-    "href": "index.html#inference-credible-intervals-vs-confidence-intervals.",
-    "title": "ROBUST BAYESIAN INFERENCE FOR SET-IDENTIFIED MODELS",
-    "section": "Inference: credible intervals vs confidence intervals.",
-    "text": "Inference: credible intervals vs confidence intervals.\n\nFrequentist Interpretation\nA range of values that contain the true parameter value a certain amount of time over repeated experiments.\nBayesian Interpretation\nA range of values within which the true parameter lies with a certain probability, given the data and prior beliefs.\nDirect statement about the probability of the true parameter being within the interval. No need to think about repeated experiments."
-  },
-  {
-    "objectID": "index.html#introduction-to-notation",
-    "href": "index.html#introduction-to-notation",
-    "title": "ROBUST BAYESIAN INFERENCE FOR SET-IDENTIFIED MODELS",
-    "section": "Introduction to notation",
-    "text": "Introduction to notation\n\\[\nP(\\theta | Y) =\\frac{P(Y | \\theta) P(\\theta)}{P(Y)}\n\\]\n\nLet \\(\\mathbf{Y} \\subseteq\\mathbb{R}^{d}\\) be the set of samples \\(Y\\) and \\(\\Theta\\subseteq\\mathbb{R}^{d}\\) be the set of possible parameter values \\(\\theta\\).\nSuppose we only observe a reduced form parameter \\(\\phi = g(\\theta)\\), where \\(g: \\Theta \\to \\Phi,\\quad g(\\theta) = g(\\theta^{'}) \\text{ iff }p(Y|\\theta) = p(Y|\\theta^{'}) \\forall Y\\in \\mathbf{Y}\\). Note in set identification \\(g\\) is not injective.\nDefine the identified set \\(IS_{\\theta}(\\phi) = \\{\\theta \\in \\Theta | g(\\theta) = \\phi\\} = g^{-1}(\\{\\phi\\})\\).\nNote that the identified sets constitute a partition of \\(\\Theta\\)."
-  },
-  {
-    "objectID": "index.html#unrevisable-priors-in-the-case-of-a-svar0",
-    "href": "index.html#unrevisable-priors-in-the-case-of-a-svar0",
-    "title": "ROBUST BAYESIAN INFERENCE FOR SET-IDENTIFIED MODELS",
-    "section": "Unrevisable priors in the case of a SVAR(0)",
-    "text": "Unrevisable priors in the case of a SVAR(0)\n\nRemember the reduced for SVAR(0) \\[\ny_{t} = A^{-1}u_{t}    = \\eta_{t} \\quad E[\\eta_{t}\\eta_{t}^{T}]= \\Sigma = (A^{T}QQ^{T}A)^{-1}  \\forall Q \\in \\mathcal{O}(2)\n\\]\nGiven \\(A^{-1} = \\begin{pmatrix}a_{00} & a_{01} \\\\ a_{10} & a_{11}\\end{pmatrix}\\), then any matrix that satisfies \\(A^{-1}(A^{-1})^{T} = \\Sigma\\) is consistent with any reasonable prior.\nNormalising \\(det(A^{-1}) = 1\\), we get that solution to the following system is consistent with any reasonable prior \\[\n\\begin{cases}\na_{11}^{2} + a_{01}^{2} = \\sigma_{00}\\\\\na_{10}^{2} + a^{2}_{00} = \\sigma_{11}\\\\\na_{10}a_{11} + a_{01}a_{00} = -\\sigma_{12}\n\\end{cases}\n\\]\nWe can set a prior on \\(A\\) or \\(Q\\) as they’re equivalent. Or a prior on \\(\\Sigma\\) and then \\(A|\\Sigma\\).\n\n\nWe have three equations for four unkwowns. So we are going to get a hyperplane in four dimensions that is identified. If we naively set a prior, that e.g. \\(a_{01}\\) is really big. Then we favour settings where where the hyperplane has a certain rotation. Setting a prior on the rotation though is setting a prior on the identified set itself. Hence we are slightly cheating. We are choosing \\(\\pi_{\\theta |\\phi}\\). Choosing \\(\\pi_{\\phi |Y}\\) is choosing the likely position of the hyperplane and coosing \\(\\pi_{\\thet |Y}\\) is choosing a point in four dimensional space (that the identified variables can be rotated to fit?).\nThe simplest form of prior trimming would be to assume that one of the variables are positive. This will limit us to a smaller set of rotations. But we are still only set identified. We also have to trim the priors to integrate to one on the identified set.\nIt is difficult to visualise since we are already working in a four dimensional space, but we need a fifth dimension to visualise priors"
-  },
-  {
-    "objectID": "index.html#the-solution-what-we-want",
-    "href": "index.html#the-solution-what-we-want",
-    "title": "ROBUST BAYESIAN INFERENCE FOR SET-IDENTIFIED MODELS",
-    "section": "The solution: What we want",
-    "text": "The solution: What we want\n\\[\nP(\\theta | Y) =\\frac{P(Y | \\theta) P(\\theta)}{P(Y)}\n\\]\n\nAs discussed the problem in the case of set identified models is that \\(P(Y|\\theta)\\) is flat, so \\(P(\\theta)\\) determines the posterior.\nWe want to make statements that are robust to any choice of prior. E.g. no matter the prior the posterior is at least that big.\nFor this consider \\(\\Pi(\\theta |\\phi) = \\{p(\\theta|\\phi) |\\int_{IS_{\\theta}(\\phi)}dp(\\theta|\\phi) = 1 \\} = \\{\\pi_{\\theta|\\phi} |\\pi_{\\theta|\\phi}(IS_{\\theta}(\\phi)) = 1,\\pi_{\\phi}-a.s. \\}\\)"
-  },
-  {
-    "objectID": "index.html#quick-summary-of-what-we-just-looked-at",
-    "href": "index.html#quick-summary-of-what-we-just-looked-at",
-    "title": "ROBUST BAYESIAN INFERENCE FOR SET-IDENTIFIED MODELS",
-    "section": "Quick summary of what we just looked at",
-    "text": "Quick summary of what we just looked at\n\\[\nP(\\theta | Y) =\\frac{P(Y | \\theta) P(\\theta)}{P(Y)}\n\\]\n\nIssue: The frequentist properties of Bayesian methods in set identified models are bad\nReason: In set identified models, the likelihood is flat on the identified set,therefore the prior not the data determines the posterior shape.\nSolution: For any hypothesis about where your parameters lie, consider the worst case scenario\nRemaining practical issue: Reporting probability distributions for all possible hypotheses about parameters is a bit difficult.\n\n\nIn set identified models since we only observe reduced form parameter, this identifies a set of underlying parameters. The data does not allow us to distinguish between any two underlying parameters, so the posterior on the identified set is only a function of the prior.\nAs a solution we can consider any form of conditional prior that translates beliefs about the reduced form parameters to beliefs about the underlying parameter. For any hypothesis about the parameters, we can calculate the worst case scenario."
-  },
-  {
-    "objectID": "index.html#graveyard",
-    "href": "index.html#graveyard",
-    "title": "ROBUST BAYESIAN INFERENCE FOR SET-IDENTIFIED MODELS",
-    "section": "Graveyard",
-    "text": "Graveyard\nPossible unrevisable priors on the identified sets"
   }
 ]

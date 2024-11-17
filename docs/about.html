@@ -345,17 +345,15 @@
 <h1>Quick overview of Bayesian statistics</h1>
 
 </section>
-<section id="bayes-rule" class="slide level2">
+<section id="bayes-rule" class="slide level2 smaller">
 <h2>Bayes rule</h2>
-<p><span class="math display">\[
-P(\text{Hypothesis} | \text{Data}) =\frac{P(\text{Data} | \text{Hypothesis}) P(\text{Hypothesis})}{P(\text{data})}
-\]</span> - Prior: Our Hyptothesis (= parameters) before seeing the data, set by the researcher</p>
+<p><span class="math inline">\(Y \in \mathbf{Y}\)</span> be a sample from the space of all samples, <span class="math inline">\(\theta \in \Theta\)</span> be a parameter from all possible parameter values <span class="math display">\[
+P(\theta | Y) =\frac{P(Y | \theta) P(\theta)}{P(Y)}
+\]</span> - Prior: Belief about parameters before seeing the data, set by the researcher.</p>
 <ul>
-<li class="fragment"><p>Likelihood: The probability of observing the data given the Hypothesis, our “model”</p></li>
-<li class="fragment"><p>Posterior: Belief about the Hypothesis (= parameters) given the data, the point of Bayesian statistics</p>
-<ul>
-<li class="fragment">Evidence: (Usually unobserved) normalising constant</li>
-</ul></li>
+<li class="fragment"><p>Likelihood: The probability of observing the data given the parameters, the endpoint of frequentism.</p></li>
+<li class="fragment"><p>Posterior: Belief about parameters given the data, the point of Bayesian statistics.</p></li>
+<li class="fragment"><p>Evidence: (Usually unobserved) normalising constant.</p></li>
 </ul>
 </section>
 <section class="slide level2">
