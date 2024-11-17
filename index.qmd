@@ -548,6 +548,9 @@ $$
 
 ## Why the Aumann expectation and why the set of posterior means? {.smaller}
 
+- In a general setting for for $A  := IS_{\theta}(\phi)$ given $\sigma_{A}(q) :\mathbb{R}^{n} \to \mathbb{R} \cup \{+\infty\}$, we have $\sigma_{E^{A}_{\phi|Y}[co(IS_{\theta}(\phi))]} = E_{\phi |Y}[\sigma_{IS_{\theta}(\phi)}]$
+- Importantly $E_{\phi |Y}[\sigma_{IS_{\theta}(\phi)}]$ can be calculated using Monte Carlo.
+- Note $\sigma_{[a,b]}(v) = \begin{cases} bv \text{ if } v >0\\ av \text{ if } v<0 \\ 0 \text{ if } v = 0\end{cases}$ and $IS_{\theta}(\phi) = [l(\phi), u(\phi)]$
 - Consider 1D case $\Theta \subseteq \mathbb{R}$ then 
 $$
 \begin{align*}
@@ -555,13 +558,11 @@ $$
 &l(\phi) = \inf\{\theta | \theta \in IS_{\theta}(\phi)\}, \quad u(\phi) = \sup\{\theta | \theta \in IS_{\theta}(\phi)\}
 \end{align*}
 $$
-- In a more general setting for for $A  := IS_{\theta}(\phi)$ given $\sigma_{A}(q) :\mathbb{R}^{n} \to \mathbb{R} \cup \{+\infty\}$, we have $\sigma_{E^{A}_{\phi|Y}[co(IS_{\theta}(\phi))]} = E_{\phi |Y}[\sigma_{IS_{\theta}(\phi)}]$
-- Importantly $E_{\phi |Y}[\sigma_{IS_{\theta}(\phi)}]$ can be calculated using Monte Carlo.
-- Note $\sigma_{[a,b]}(v) = \begin{cases} bv \text{ if } v >0\\ av \text{ if } v<0 \\ 0 \text{ if } v = 0\end{cases}$ and $IS_{\theta}(\phi) = [l(\phi), u(\phi)]$
 - Q: Is the true parameter always going to be in this set?
  
 ::: {.notes}
-Note: They claim that the expectation of the support function can be calculated by monte carlo, how easy that would be I do not know
+Note: They claim that the expectation of the support function can be calculated by monte carlo, how easy that would be I do not know.
+Also we can ask about consistency. In point identified cases, we would want the expected value of the sample parameter to converge to be equal to the true parameter case, we also want this from the set. That the expected value of the set is equal to the true value of the identified set.     
 :::
 
 ---
@@ -584,14 +585,15 @@ $$
 ## Consistency {.smaller}
 - Given true parameter value $\phi_{0}$
 - Assumption 2:
-  - i) $IS_{\theta}(\phi_{0})$ is bounded and $IS_{\theta}(\cdot)$ is continuous at $\theta = \theta_{0}$ (note set continuity)
-  - ii) Posterior of $\phi$ is consistent for $\phi_{0}$, $P_{Y^{\infty}|\theta_{0}}$-a.s.
-  - iii) $\exists \delta > 0$ s.t. $IS_{\theta}(\phi) \in L_{1+\delta}(\pi_{\phi|Y})$
+  - $IS_{\theta}(\phi_{0})$ is bounded and $IS_{\theta}(\cdot)$ is continuous at $\phi = \phi_{0}$ (note set continuity)
+  - Posterior of $\phi$ is consistent for $\phi_{0}$, $P_{Y^{\infty}|\theta_{0}}$-a.s.
+  - $\exists \delta > 0$ s.t. $IS_{\theta}(\phi) \in L_{1+\delta}(\pi_{\phi|Y})$
 - Theorem 3: a) Under i) and ii) $\lim_{T \to \infty } \pi_{\theta| Y^{T}}(\{\phi | d_{H}(IS_{\theta}(\phi), IS_{\theta}(\phi_{0})) > \epsilon\}) = 0$
 - Theorem 3: b) Suppose $\pi_{\phi}$ is non atomic then $\lim_{T \to \infty } d_{H}(E^{A}_{\phi |Y}[co(IS_{\theta}(\phi))], co(IS_{\theta}(\phi_{0}))) = 0$, $P_{Y^{\infty}|\phi_{0}}$-a.s.
 
 
 ::: {.notes}
+Posterior consistency = we didn't misspecify our model or we put zero probability on the true paramter value in the prior?
 A) The identified set $IS_{\theta}(\phi)$ converges to $IS_{\theta}(\phi_{0})$ under the Hausdorff Metric
 B) We can use the posterior means as an approximation of the true identified set.
 :::
@@ -600,8 +602,8 @@ B) We can use the posterior means as an approximation of the true identified set
 
 ## Coverage of robust credible region {.smallers}
 - Asumption 3:
-  - i. $IS_{\theta}(\phi)$ is $\pi_{\theta}$-a.s. closed and bounded and $IS_{\theta}(\phi_{0})$ is closed and bounded
-  - ii. $C_{\alpha}$ is in the class of closed and convex sets of $\mathbb{R}^{k}$
+  - $IS_{\theta}(\phi)$ is $\pi_{\theta}$-a.s. closed and bounded and $IS_{\theta}(\phi_{0})$ is closed and bounded
+  - $C_{\alpha}$ is in the class of closed and convex sets of $\mathbb{R}^{k}$
 - Assumption 4: To do with the convergence of the support function of the convex hull of the identified set to the true convex hull of the identified set.
   - The assumptions characterise the geometry of the identified set and if the support function is not differentiable at some point then the assumptions can be violated
   
@@ -640,7 +642,7 @@ ggplot() +
 
 ---
 
-### Coverage of robust credible region 2
+### Coverage of robust credible region 2 {.smaller}
 - Given the assumptions above hold then, $C_{\alpha}$ is an asymptotically valid confidence interval as
 $$
 \lim_{T \to \infty} P_{Y^{T}|\phi_{0}}(IS_{\theta}(\phi) \subset C_{\alpha}) \geq \alpha
@@ -666,7 +668,8 @@ Also when it goes wrong,
 
 ### Sources
 
-Li, S., Ogura, Y., Kreinovich, V. (2002). The Aumann Integral and the Conditional Expectation of a Set-Valued Random Variable. In: Limit Theorems and Applications of Set-Valued and Fuzzy Set-Valued Random Variables. Theory and Decision Library, vol 43. Springer, Dordrecht. https://doi.org/10.1007/978-94-015-9932-0_2 \# Graveyard
+Li, S., Ogura, Y., Kreinovich, V. (2002). The Aumann Integral and the Conditional Expectation of a Set-Valued Random Variable. In: Limit Theorems and Applications of Set-Valued and Fuzzy Set-Valued Random Variables. Theory and Decision Library, vol 43. Springer, Dordrecht. https://doi.org/10.1007/978-94-015-9932-0_2 
+
 
 MAA 307: Convex optimization and optimal control. Samuel Amstutz. CMAP and Department of Applied Mathematics. Ecole polytechnique
 

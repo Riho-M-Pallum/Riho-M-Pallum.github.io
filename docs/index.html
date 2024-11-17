@@ -667,19 +667,19 @@ P(\theta | Y) =\frac{P(Y | \theta) P(\theta)}{P(Y)}
 <section id="why-the-aumann-expectation-and-why-the-set-of-posterior-means" class="slide level2 smaller">
 <h2>Why the Aumann expectation and why the set of posterior means?</h2>
 <ul>
+<li class="fragment">In a general setting for for <span class="math inline">\(A  := IS_{\theta}(\phi)\)</span> given <span class="math inline">\(\sigma_{A}(q) :\mathbb{R}^{n} \to \mathbb{R} \cup \{+\infty\}\)</span>, we have <span class="math inline">\(\sigma_{E^{A}_{\phi|Y}[co(IS_{\theta}(\phi))]} = E_{\phi |Y}[\sigma_{IS_{\theta}(\phi)}]\)</span></li>
+<li class="fragment">Importantly <span class="math inline">\(E_{\phi |Y}[\sigma_{IS_{\theta}(\phi)}]\)</span> can be calculated using Monte Carlo.</li>
+<li class="fragment">Note <span class="math inline">\(\sigma_{[a,b]}(v) = \begin{cases} bv \text{ if } v &gt;0\\ av \text{ if } v&lt;0 \\ 0 \text{ if } v = 0\end{cases}\)</span> and <span class="math inline">\(IS_{\theta}(\phi) = [l(\phi), u(\phi)]\)</span></li>
 <li class="fragment">Consider 1D case <span class="math inline">\(\Theta \subseteq \mathbb{R}\)</span> then <span class="math display">\[
 \begin{align*}
 &amp; \{E_{\theta | Y}(\theta) | \pi_{\theta | Y} \in \Pi_{\theta | Y}\} = E^{A}_{\phi |Y}[co(IS_{\theta}(\phi))] = \left[E_{\phi |Y}[l(\phi)], E_{\phi |Y}[u(\phi)]\right]\\
 &amp;l(\phi) = \inf\{\theta | \theta \in IS_{\theta}(\phi)\}, \quad u(\phi) = \sup\{\theta | \theta \in IS_{\theta}(\phi)\}
 \end{align*}
 \]</span></li>
-<li class="fragment">In a more general setting for for <span class="math inline">\(A  := IS_{\theta}(\phi)\)</span> given <span class="math inline">\(\sigma_{A}(q) :\mathbb{R}^{n} \to \mathbb{R} \cup \{+\infty\}\)</span>, we have <span class="math inline">\(\sigma_{E^{A}_{\phi|Y}[co(IS_{\theta}(\phi))]} = E_{\phi |Y}[\sigma_{IS_{\theta}(\phi)}]\)</span></li>
-<li class="fragment">Importantly <span class="math inline">\(E_{\phi |Y}[\sigma_{IS_{\theta}(\phi)}]\)</span> can be calculated using Monte Carlo.</li>
-<li class="fragment">Note <span class="math inline">\(\sigma_{[a,b]}(v) = \begin{cases} bv \text{ if } v &gt;0\\ av \text{ if } v&lt;0 \\ 0 \text{ if } v = 0\end{cases}\)</span> and <span class="math inline">\(IS_{\theta}(\phi) = [l(\phi), u(\phi)]\)</span></li>
 <li class="fragment">Q: Is the true parameter always going to be in this set?</li>
 </ul>
 <aside class="notes">
-<p>Note: They claim that the expectation of the support function can be calculated by monte carlo, how easy that would be I do not know</p>
+<p>Note: They claim that the expectation of the support function can be calculated by monte carlo, how easy that would be I do not know. Also we can ask about consistency. In point identified cases, we would want the expected value of the sample parameter to converge to be equal to the true parameter case, we also want this from the set. That the expected value of the set is equal to the true value of the identified set.</p>
 <style type="text/css">
         span.MJX_Assistive_MathML {
           position:absolute!important;
@@ -717,24 +717,15 @@ P(\theta | Y) =\frac{P(Y | \theta) P(\theta)}{P(Y)}
 <li class="fragment">Given true parameter value <span class="math inline">\(\phi_{0}\)</span></li>
 <li class="fragment">Assumption 2:
 <ul>
-<li class="fragment"><ol type="i">
-<li class="fragment"><span class="math inline">\(IS_{\theta}(\phi_{0})\)</span> is bounded and <span class="math inline">\(IS_{\theta}(\cdot)\)</span> is continuous at <span class="math inline">\(\theta = \theta_{0}\)</span> (note set continuity)</li>
-</ol></li>
-<li class="fragment"><ol start="2" type="i">
+<li class="fragment"><span class="math inline">\(IS_{\theta}(\phi_{0})\)</span> is bounded and <span class="math inline">\(IS_{\theta}(\cdot)\)</span> is continuous at <span class="math inline">\(\phi = \phi_{0}\)</span> (note set continuity)</li>
 <li class="fragment">Posterior of <span class="math inline">\(\phi\)</span> is consistent for <span class="math inline">\(\phi_{0}\)</span>, <span class="math inline">\(P_{Y^{\infty}|\theta_{0}}\)</span>-a.s.</li>
-</ol></li>
-<li class="fragment"><ol start="3" type="i">
 <li class="fragment"><span class="math inline">\(\exists \delta &gt; 0\)</span> s.t. <span class="math inline">\(IS_{\theta}(\phi) \in L_{1+\delta}(\pi_{\phi|Y})\)</span></li>
-</ol></li>
 </ul></li>
 <li class="fragment">Theorem 3: a) Under i) and ii) <span class="math inline">\(\lim_{T \to \infty } \pi_{\theta| Y^{T}}(\{\phi | d_{H}(IS_{\theta}(\phi), IS_{\theta}(\phi_{0})) &gt; \epsilon\}) = 0\)</span></li>
 <li class="fragment">Theorem 3: b) Suppose <span class="math inline">\(\pi_{\phi}\)</span> is non atomic then <span class="math inline">\(\lim_{T \to \infty } d_{H}(E^{A}_{\phi |Y}[co(IS_{\theta}(\phi))], co(IS_{\theta}(\phi_{0}))) = 0\)</span>, <span class="math inline">\(P_{Y^{\infty}|\phi_{0}}\)</span>-a.s.</li>
 </ul>
 <aside class="notes">
-<ol type="A">
-<li>The identified set <span class="math inline">\(IS_{\theta}(\phi)\)</span> converges to <span class="math inline">\(IS_{\theta}(\phi_{0})\)</span> under the Hausdorff Metric</li>
-<li>We can use the posterior means as an approximation of the true identified set.</li>
-</ol>
+<p>Posterior consistency = we didn’t misspecify our model or we put zero probability on the true paramter value in the prior? A) The identified set <span class="math inline">\(IS_{\theta}(\phi)\)</span> converges to <span class="math inline">\(IS_{\theta}(\phi_{0})\)</span> under the Hausdorff Metric B) We can use the posterior means as an approximation of the true identified set.</p>
 <style type="text/css">
         span.MJX_Assistive_MathML {
           position:absolute!important;
@@ -752,12 +743,8 @@ P(\theta | Y) =\frac{P(Y | \theta) P(\theta)}{P(Y)}
 <ul>
 <li class="fragment">Asumption 3:
 <ul>
-<li class="fragment"><ol type="i">
 <li class="fragment"><span class="math inline">\(IS_{\theta}(\phi)\)</span> is <span class="math inline">\(\pi_{\theta}\)</span>-a.s. closed and bounded and <span class="math inline">\(IS_{\theta}(\phi_{0})\)</span> is closed and bounded</li>
-</ol></li>
-<li class="fragment"><ol start="2" type="i">
 <li class="fragment"><span class="math inline">\(C_{\alpha}\)</span> is in the class of closed and convex sets of <span class="math inline">\(\mathbb{R}^{k}\)</span></li>
-</ol></li>
 </ul></li>
 <li class="fragment">Assumption 4: To do with the convergence of the support function of the convex hull of the identified set to the true convex hull of the identified set.
 <ul>
@@ -784,28 +771,17 @@ P(\theta | Y) =\frac{P(Y | \theta) P(\theta)}{P(Y)}
 <img data-src="index_files/figure-revealjs/unnamed-chunk-8-1.png" width="960" class="r-stretch"></section>
 <section class="slide level2">
 
-<h3 id="coverage-of-robust-credible-region-2">Coverage of robust credible region 2</h3>
+<h3 class="smaller" id="coverage-of-robust-credible-region-2">Coverage of robust credible region 2</h3>
 <ul>
-<li class="fragment">Given the assumptions above hold then, <span class="math inline">\(C_{\alpha}\)</span> is an asymptotically valid confidence interval as <span class="math display">\[
+<li class="fragment"><p>Given the assumptions above hold then, <span class="math inline">\(C_{\alpha}\)</span> is an asymptotically valid confidence interval as <span class="math display">\[
 \lim_{T \to \infty} P_{Y^{T}|\phi_{0}}(IS_{\theta}(\phi) \subset C_{\alpha}) \geq \alpha
-\]</span></li>
-<li class="fragment">And give that <span class="math inline">\(C_{\alpha}\)</span> satisfies <span class="math inline">\(\pi_{\phi | Y^{T}}(IS_{\theta}(\phi) \subset C_{\alpha}) = \alpha\)</span> then <span class="math display">\[
+\]</span></p></li>
+<li class="fragment"><p>And give that <span class="math inline">\(C_{\alpha}\)</span> satisfies <span class="math inline">\(\pi_{\phi | Y^{T}}(IS_{\theta}(\phi) \subset C_{\alpha}) = \alpha\)</span> then <span class="math display">\[
 \lim_{T \to \infty} P_{Y^{T}|\phi_{0}}(IS_{\theta}(\phi) \subset C_{\alpha}) = \alpha
-\]</span></li>
+\]</span></p></li>
+<li class="fragment"><p>As far as I understand, if the differentiability of the support function does not hold, the probability of the identified set being in the confidence interval can be higher than <span class="math inline">\(\alpha\)</span> giving a overly confident confidence interval. ::: {.notes} The second bit shows that if you construct the credible interval to satisfy the bound with equality then asymptotically the bound will also be satisfied with equality.</p></li>
 </ul>
-<aside class="notes">
-<p>The second bit shows that if you construct the credible interval to satisfy the bound with equality then asymptotically the bound will also be satisfied with equality.</p>
-<style type="text/css">
-        span.MJX_Assistive_MathML {
-          position:absolute!important;
-          clip: rect(1px, 1px, 1px, 1px);
-          padding: 1px 0 0 0!important;
-          border: 0!important;
-          height: 1px!important;
-          width: 1px!important;
-          overflow: hidden!important;
-          display:block!important;
-      }</style></aside>
+<p>Also when it goes wrong, :::</p>
 </section>
 <section class="slide level2">
 
